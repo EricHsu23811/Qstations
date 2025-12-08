@@ -1,0 +1,9 @@
+# 忽略 Python 編譯檔
+__pycache__/
+*.pyc
+
+# 忽略測試生成的結果圖
+*.png
+
+# 忽略 VS Code 設定檔 (選填)
+.vscode/

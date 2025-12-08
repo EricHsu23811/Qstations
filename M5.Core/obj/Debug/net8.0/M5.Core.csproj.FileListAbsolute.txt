@@ -1,0 +1,11 @@
+D:\MGF_work\Q.AI\Calibration\M5_SDK_testing\Q_Test_Station_GUI_M5_SDK-main\M5.Core\bin\Debug\net8.0\M5.Core.deps.json
+D:\MGF_work\Q.AI\Calibration\M5_SDK_testing\Q_Test_Station_GUI_M5_SDK-main\M5.Core\bin\Debug\net8.0\M5.Core.dll
+D:\MGF_work\Q.AI\Calibration\M5_SDK_testing\Q_Test_Station_GUI_M5_SDK-main\M5.Core\bin\Debug\net8.0\M5.Core.pdb
+D:\MGF_work\Q.AI\Calibration\M5_SDK_testing\Q_Test_Station_GUI_M5_SDK-main\M5.Core\obj\Debug\net8.0\M5.Core.GeneratedMSBuildEditorConfig.editorconfig
+D:\MGF_work\Q.AI\Calibration\M5_SDK_testing\Q_Test_Station_GUI_M5_SDK-main\M5.Core\obj\Debug\net8.0\M5.Core.AssemblyInfoInputs.cache
+D:\MGF_work\Q.AI\Calibration\M5_SDK_testing\Q_Test_Station_GUI_M5_SDK-main\M5.Core\obj\Debug\net8.0\M5.Core.AssemblyInfo.cs
+D:\MGF_work\Q.AI\Calibration\M5_SDK_testing\Q_Test_Station_GUI_M5_SDK-main\M5.Core\obj\Debug\net8.0\M5.Core.csproj.CoreCompileInputs.cache
+D:\MGF_work\Q.AI\Calibration\M5_SDK_testing\Q_Test_Station_GUI_M5_SDK-main\M5.Core\obj\Debug\net8.0\M5.Core.dll
+D:\MGF_work\Q.AI\Calibration\M5_SDK_testing\Q_Test_Station_GUI_M5_SDK-main\M5.Core\obj\Debug\net8.0\refint\M5.Core.dll
+D:\MGF_work\Q.AI\Calibration\M5_SDK_testing\Q_Test_Station_GUI_M5_SDK-main\M5.Core\obj\Debug\net8.0\M5.Core.pdb
+D:\MGF_work\Q.AI\Calibration\M5_SDK_testing\Q_Test_Station_GUI_M5_SDK-main\M5.Core\obj\Debug\net8.0\ref\M5.Core.dll

@@ -1,0 +1,2177 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Thorlabs.PM100D</name>
+    </assembly>
+    <members>
+        <member name="M:Thorlabs.PM100D.PM100D.#ctor(System.IntPtr)">
+            <summary>
+            This function creates an IVI instrument driver session, typically using the C session instrument handle.
+            </summary>
+            <param name="Instrument_Handle">
+            The instrument handle that is used to create an IVI instrument driver session.
+            </param>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.#ctor(System.String,System.Boolean,System.Boolean)">
+            <summary>
+            This function initializes the instrument driver session and performs the following initialization actions:
+            
+            (1) Opens a session to the Default Resource Manager resource and a session to the specified device using the Resource Name  specified.
+            (2) Performs an identification query on the instrument.
+            (3) Resets the instrument to a known state.
+            (4) Sends initialization commands to the instrument.
+            (5) Returns an instrument handle which is used to distinguish between different sessions of this instrument driver.
+            
+            Notes:
+            (1) Each time this function is invoked a unique session is opened.  
+            </summary>
+            <param name="Resource_Name">
+            This parameter specifies the device (resource) with which to establish a communication session. The syntax for the Instrument Descriptor is shown below. Optional segments are shown in square brackets ([]). Required segments that must be filled in are denoted by angle brackets (&lt;&gt;).
+            
+            USB[board]::0x1313::product id
+                            ::serial number[::interface number][::INSTR]
+                            
+            Remote Access   visa://hostname[:port]/resource
+            
+            The default values for optional parameters are shown below.
+            
+            Optional Segment          Default Value
+            ---------------------------------------
+            board                     0
+            USB interface number      0
+            
+            The product id codes for supported instruments are shown below.
+            
+            Product ID   Instrument Type
+            -------------------------------------------------
+            0x8070       PM100D with DFU interface enabled
+            0x8071       PM100A with DFU interface enabled
+            0x8072       PM100USB with DFU interface enabled
+            0x8078       PM100D with DFU interface disabled
+            0x8079       PM100A with DFU interface disabled
+            0x80B0       PM200
+            
+            Example Resource Strings:
+            --------------------------------------------------------------
+            USB::0x1313::0x8070::M12345678::INSTR
+                                  PM100D with a serial number of
+                                  M12345678.
+            
+            USB::0x1313::0x80B0::M12345678::INSTR
+                                  PM200 with a serial number of
+                                  M12345678.
+            
+            visa://1.2.3.4/USB::0x1313::0x8071::M23456789::INSTR      
+                                  Remote access to the PM100A with a serial
+                                  number of M23456789 at the specified IP
+                                  address.
+            
+            visa://hostname/USB::0x1313::0x8072::M34567890::INSTR
+                                  Remote access to the PM100USB with a
+                                  serial number of M23456789 on the
+                                  specified host.
+            
+            Note: You may use VISA &lt;Find Resources&gt; with an appropriate seach pattern to get the Resource Name for your device. 
+            For PM100x devices use: "USB?*::0x1313::0x807?::?*::INSTR" 
+            For PM200 devices use:  "USB?*::0x1313::0x80B?::?*::INSTR" 
+            
+            </param>
+            <param name="ID_Query">
+            This parameter specifies whether an identification query is performed during the initialization process.
+            
+            VI_OFF (0): Skip query.
+            VI_ON  (1): Do query (default).
+            
+            </param>
+            <param name="Reset_Device">
+            This parameter specifies whether the instrument is reset during the initialization process.
+            
+            VI_OFF (0) - no reset 
+            VI_ON  (1) - instrument is reset (default)
+            
+            </param>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setTime(System.Int16,System.Int16,System.Int16,System.Int16,System.Int16,System.Int16)">
+            <summary>
+            This function sets the system date and time of the powermeter.
+            
+            Notes:
+            (1) Date and time are displayed on instruments screen and are used as timestamp for data saved to memory card.
+            (2) The function is only available on PM100D and PM200.
+            </summary>
+            <param name="Year">
+            This parameter specifies the actual year in the format yyyy e.g. 2009.
+            </param>
+            <param name="Month">
+            This parameter specifies the actual month in the format mm e.g. 01.
+            </param>
+            <param name="Day">
+            This parameter specifies the actual day in the format dd e.g. 15.
+            
+            </param>
+            <param name="Hour">
+            This parameter specifies the actual hour in the format hh e.g. 14.
+            
+            </param>
+            <param name="Minute">
+            This parameter specifies the actual minute in the format mm e.g. 43.
+            
+            </param>
+            <param name="Second">
+            This parameter specifies the actual second in the format ss e.g. 50.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getTime(System.Int16@,System.Int16@,System.Int16@,System.Int16@,System.Int16@,System.Int16@)">
+            <summary>
+            This function returns the system date and time of the powermeter.
+            
+            Notes:
+            (1) Date and time are displayed on instruments screen and are used as timestamp for data saved to memory card.
+            (2) The function is only available on PM100D and PM200.
+            </summary>
+            <param name="Year">
+            This parameter specifies the actual year in the format yyyy.
+            </param>
+            <param name="Month">
+            This parameter specifies the actual month in the format mm.
+            </param>
+            <param name="Day">
+            This parameter specifies the actual day in the format dd.
+            </param>
+            <param name="Hour">
+            This parameter specifies the actual hour in the format hh.
+            </param>
+            <param name="Minute">
+            This parameter specifies the actual minute in the format mm.
+            </param>
+            <param name="Second">
+            This parameter specifies the actual second in the format ss.
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setLineFrequency(System.Double)">
+            <summary>
+            This function selects the line frequency.
+            
+            </summary>
+            <param name="Line_Frequency">
+            This parameter specifies the line frequency.
+            
+            Acceptable values:
+              PM100D_LINE_FREQ_50   (0): 50Hz
+              PM100D_LINE_FREQ_60   (1): 60Hz
+            
+            
+            </param>
+            <returns>
+            This value shows the status code returned by the function call.
+            
+            For Status Codes see function &lt;Error Message&gt;.
+            
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getLineFrequency(System.Int16@)">
+            <summary>
+            This function returns the selected line frequency.
+            
+            </summary>
+            <param name="Line_Frequency">
+            This parameter returns the selected temperature sensor.
+            
+            Return values:
+              PM100D_LINE_FREQ_50   (0): 50Hz
+              PM100D_LINE_FREQ_60   (1): 60Hz
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getBatteryVoltage(System.Double@)">
+            <summary>
+            This function is used to obtain the battery voltage readings from the instrument.
+            
+            Remark:
+            (1) This function is only supported with the PM160.
+            (2) This function obtains the latest battery voltage measurement result.
+            (3) With the USB cable connected this function will obtain the loading voltage. Only with USB cable disconnected (Bluetooth connection) the actual battery voltage can be read. 
+            </summary>
+            <param name="Voltage">
+            This parameter returns the battery voltage in volts [V].
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.writeRegister(System.Int16,System.Int16)">
+            <summary>
+            This function writes the content of any writable instrument register. Refer to your instrument's user's manual for more details on status structure registers.
+            
+            </summary>
+            <param name="Register_ID">
+            Specifies the register to be used for operation. This parameter can be any of the following constants:
+            
+              PM100D_REG_SRE         (1): Service Request Enable
+              PM100D_REG_ESE         (3): Standard Event Enable
+              PM100D_REG_OPER_ENAB   (6): Operation Event Enable Register
+              PM100D_REG_OPER_PTR    (7): Operation Positive Transition
+              PM100D_REG_OPER_NTR    (8): Operation Negative Transition
+              PM100D_REG_QUES_ENAB  (11): Questionable Event Enable Reg.
+              PM100D_REG_QUES_PTR   (12): Questionable Positive Transition
+              PM100D_REG_QUES_NTR   (13): Questionable Negative Transition
+              PM100D_REG_MEAS_ENAB  (16): Measurement Event Enable Register
+              PM100D_REG_MEAS_PTR   (17): Measurement Positive Transition
+              PM100D_REG_MEAS_NTR   (18): Measurement Negative Transition
+              PM100D_REG_AUX_ENAB   (21): Auxiliary Event Enable Register
+              PM100D_REG_AUX_PTR    (22): Auxiliary Positive Transition
+              PM100D_REG_AUX_NTR    (23): Auxiliary Negative Transition 
+            
+            </param>
+            <param name="Value">
+            This parameter specifies the register value.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.readRegister(System.Int16,System.Int16@)">
+            <summary>
+            This function reads the content of any readable instrument register. Refer to your instrument's user's manual for more details on status structure registers.
+            
+            </summary>
+            <param name="Register_ID">
+            Specifies the register to be used for operation. This parameter can be any of the following constants:
+            
+              PM100D_REG_STB         (0): Status Byte Register
+              PM100D_REG_SRE         (1): Service Request Enable
+              PM100D_REG_ESB         (2): Standard Event Status Register
+              PM100D_REG_ESE         (3): Standard Event Enable
+              PM100D_REG_OPER_COND   (4): Operation Condition Register
+              PM100D_REG_OPER_EVENT  (5): Operation Event Register
+              PM100D_REG_OPER_ENAB   (6): Operation Event Enable Register
+              PM100D_REG_OPER_PTR    (7): Operation Positive Transition
+              PM100D_REG_OPER_NTR    (8): Operation Negative Transition
+              PM100D_REG_QUES_COND   (9): Questionable Condition Register
+              PM100D_REG_QUES_EVENT (10): Questionable Event Register
+              PM100D_REG_QUES_ENAB  (11): Questionable Event Enable Reg.
+              PM100D_REG_QUES_PTR   (12): Questionable Positive Transition
+              PM100D_REG_QUES_NTR   (13): Questionable Negative Transition
+              PM100D_REG_MEAS_COND  (14): Measurement Condition Register
+              PM100D_REG_MEAS_EVENT (15): Measurement Event Register
+              PM100D_REG_MEAS_ENAB  (16): Measurement Event Enable Register
+              PM100D_REG_MEAS_PTR   (17): Measurement Positive Transition
+              PM100D_REG_MEAS_NTR   (18): Measurement Negative Transition
+              PM100D_REG_AUX_COND   (19): Auxiliary Condition Register
+              PM100D_REG_AUX_EVENT  (20): Auxiliary Event Register
+              PM100D_REG_AUX_ENAB   (21): Auxiliary Event Enable Register
+              PM100D_REG_AUX_PTR    (22): Auxiliary Positive Transition
+              PM100D_REG_AUX_NTR    (23): Auxiliary Negative Transition 
+            
+            </param>
+            <param name="Value">
+            This parameter returns the register value.
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setDispBrightness(System.Double)">
+            <summary>
+            This function sets the display brightness.
+            </summary>
+            <param name="Brightness">
+            This parameter specifies the display brightness.
+            
+            Range   : 0.0 .. 1.0
+            Default : 1.0
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getDispBrightness(System.Double@)">
+            <summary>
+            This function returns the display brightness.
+            
+            </summary>
+            <param name="Brightness">
+            This parameter returns the display brightness (0..1).
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setDispContrast(System.Double)">
+            <summary>
+            This function sets the display contrast of a PM100D.
+            
+            Note: The function is available on PM100D only.
+            </summary>
+            <param name="Contrast">
+            This parameter specifies the display contrast.
+            
+            Range   : 0.0 .. 1.0
+            Default : 0.5
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getDispContrast(System.Double@)">
+            <summary>
+            This function returns the display contrast of a PM100D.
+            
+            Note: This function is available on PM100D only
+            </summary>
+            <param name="Contrast">
+            This parameter returns the display contrast (0..1).
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getCalibrationMsg(System.Text.StringBuilder)">
+            <summary>
+            This function returns a human readable calibration message.
+            
+            </summary>
+            <param name="Message">
+            This parameter returns the calibration message.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setAvgCnt(System.Int16)">
+            <summary>
+            This function sets the average count for measurement value generation.
+            
+            </summary>
+            <param name="Average_Count">
+            This parameter specifies the average count.
+            The default value is 1.
+            
+            Remark: 
+            Internal there are taken 3000 measurements per second.
+            And so the   Average Time = Average Count / 3000 [s].
+            To get an measurement value from the device the timeout in your application has to be longer than the calculated average time.
+            
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getAvgCnt(System.Int16@)">
+            <summary>
+            This function returns the average count for measurement value generation.
+            
+            </summary>
+            <param name="Average_Count">
+            This parameter returns the actual Average Count.
+            
+            Remark: 
+            Internal there are taken 3000 measurements per second.
+            And so the   Average Time = Average Count / 3000 [s].
+            To get an measurement value from the device the timeout in your application has to be longer than the calculated average time.
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setAttenuation(System.Double)">
+            <summary>
+            This function sets the input attenuation.
+            
+            </summary>
+            <param name="Attenuation">
+            This parameter specifies the input attenuation in dezibel [dB].
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getAttenuation(System.Int16,System.Double@)">
+            <summary>
+            This function returns the input attenuation.
+            
+            </summary>
+            <param name="Attribute">
+            This parameter specifies the value to be queried.
+            
+            Acceptable values:
+              PM100D_ATTR_SET_VAL  (0): Set value
+              PM100D_ATTR_MIN_VAL  (1): Minimum value
+              PM100D_ATTR_MAX_VAL  (2): Maximum value
+              PM100D_ATTR_DFLT_VAL (3): Default value
+            
+            </param>
+            <param name="Attenuation">
+            This parameter returns the specified input attenuation in dezibel [dB].
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.startDarkAdjust">
+            <summary>
+            This function starts the dark current/zero offset adjustment procedure.
+            
+            Remark: 
+            (1) You have to darken the input before starting dark/zero adjustment.
+            (2) You can get the state of dark/zero adjustment with &lt;Get Dark Adjustment State&gt;
+            (3) You can stop dark/zero adjustment with &lt;Cancel Dark Adjustment&gt;
+            (4) You get the dark/zero value with &lt;Get Dark Offset&gt;
+            (5) Energy sensors do not support this function
+            </summary>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.cancelDarkAdjust">
+            <summary>
+            This function cancels a running dark current/zero offset adjustment procedure.
+            
+            </summary>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getDarkAdjustState(System.Int16@)">
+            <summary>
+            This function returns the state of a currently running dark current/zero offset adjustment procedure.
+            
+            </summary>
+            <param name="State">
+            This parameter returns the dark adjustment state.
+            
+            Possible return values are:
+            PM100D_STAT_DARK_ADJUST_FINISHED (0) : no dark adjustment running
+            PM100D_STAT_DARK_ADJUST_RUNNING  (1) : dark adjustment is running
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getDarkOffset(System.Double@)">
+            <summary>
+            This function returns the dark/zero offset.
+            
+            The function is not supported with energy sensors.
+            </summary>
+            <param name="Dark_Offset">
+            This parameter returns the dark/zero offset.
+            
+            The unit of the returned offset value depends on the sensor type. Photodiodes return the dark offset in ampere [A]. Thermal sensors return the dark offset in volt [V].
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setBeamDia(System.Double)">
+            <summary>
+            This function sets the users beam diameter in millimeter [mm].
+            
+            Remark:
+            Beam diameter set value is used for calculating power and energy density.
+            
+            </summary>
+            <param name="Beam_Diameter">
+            This parameter specifies the users beam diameter in millimeter [mm].
+            
+            Remark:
+            Beam diameter set value is used for calculating power and energy density.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getBeamDia(System.Int16,System.Double@)">
+            <summary>
+            This function returns the users beam diameter in millimeter [mm].
+            
+            Remark:
+            Beam diameter set value is used for calculating power and energy density.
+            
+            </summary>
+            <param name="Attribute">
+            This parameter specifies the value to be queried.
+            
+            Acceptable values:
+              PM100D_ATTR_SET_VAL  (0): Set value
+              PM100D_ATTR_MIN_VAL  (1): Minimum value
+              PM100D_ATTR_MAX_VAL  (2): Maximum value
+            
+            </param>
+            <param name="Beam_Diameter">
+            This parameter returns the specified beam diameter in millimeter [mm].
+            
+            Remark:
+            Beam diameter set value is used for calculating power and energy density.
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setWavelength(System.Double)">
+            <summary>
+            This function sets the users wavelength in nanometer [nm].
+            
+            Remark:
+            Wavelength set value is used for calculating power.
+            
+            </summary>
+            <param name="Wavelength">
+            This parameter specifies the users wavelength in nanometer [nm].
+            
+            Remark:
+            Wavelength set value is used for calculating power.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getWavelength(System.Int16,System.Double@)">
+            <summary>
+            This function returns the users wavelength in nanometer [nm].
+            
+            Remark:
+            Wavelength set value is used for calculating power.
+            
+            </summary>
+            <param name="Attribute">
+            This parameter specifies the value to be queried.
+            
+            Acceptable values:
+              PM100D_ATTR_SET_VAL  (0): Set value
+              PM100D_ATTR_MIN_VAL  (1): Minimum value
+              PM100D_ATTR_MAX_VAL  (2): Maximum value
+            
+            </param>
+            <param name="Wavelength">
+            This parameter returns the specified wavelength in nanometer [nm].
+            
+            Remark:
+            Wavelength set value is used for calculating power.
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setPhotodiodeResponsivity(System.Double)">
+            <summary>
+            This function sets the photodiode responsivity in ampere per watt [A/W].
+            
+            </summary>
+            <param name="Response">
+            This parameter specifies the photodiode responsivity in ampere per watt [A/W].
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getPhotodiodeResponsivity(System.Int16,System.Double@)">
+            <summary>
+            This function returns the photodiode responsivity in ampere per watt [A/W].
+            
+            </summary>
+            <param name="Attribute">
+            This parameter specifies the value to be queried.
+            
+            Acceptable values:
+              PM100D_ATTR_SET_VAL  (0): Set value
+              PM100D_ATTR_MIN_VAL  (1): Minimum value
+              PM100D_ATTR_MAX_VAL  (2): Maximum value
+              PM100D_ATTR_DFLT_VAL (3): Default value
+            
+            </param>
+            <param name="Responsivity">
+            This parameter returns the specified photodiode responsivity in ampere per watt [A/W].
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setThermopileResponsivity(System.Double)">
+            <summary>
+            This function sets the thermopile responsivity in volt per watt [V/W]
+            
+            </summary>
+            <param name="Response">
+            This parameter specifies the thermopile responsivity in volt per watt [V/W]
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getThermopileResponsivity(System.Int16,System.Double@)">
+            <summary>
+            This function returns the thermopile responsivity in volt per watt [V/W]
+            
+            </summary>
+            <param name="Attribute">
+            This parameter specifies the value to be queried.
+            
+            Acceptable values:
+              PM100D_ATTR_SET_VAL  (0): Set value
+              PM100D_ATTR_MIN_VAL  (1): Minimum value
+              PM100D_ATTR_MAX_VAL  (2): Maximum value
+              PM100D_ATTR_DFLT_VAL (3): Default value
+            
+            </param>
+            <param name="Responsivity">
+            This parameter returns the specified thermopile responsivity in volt per watt [V/W]
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setPyrosensorResponsivity(System.Double)">
+            <summary>
+            This function sets the pyrosensor responsivity in volt per joule [V/J]
+            
+            </summary>
+            <param name="Response">
+            This parameter specifies the pyrosensor responsivity in volt per joule [V/J]
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getPyrosensorResponsivity(System.Int16,System.Double@)">
+            <summary>
+            This function returns the pyrosensor responsivity in volt per joule [V/J]
+            
+            </summary>
+            <param name="Attribute">
+            This parameter specifies the value to be queried.
+            
+            Acceptable values:
+              PM100D_ATTR_SET_VAL  (0): Set value
+              PM100D_ATTR_MIN_VAL  (1): Minimum value
+              PM100D_ATTR_MAX_VAL  (2): Maximum value
+              PM100D_ATTR_DFLT_VAL (3): Default value
+            
+            </param>
+            <param name="Responsivity">
+            This parameter returns the specified pyrosensor responsivity in volt per joule [V/J]
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setCurrentAutoRange(System.Boolean)">
+            <summary>
+            This function sets the current auto range mode.
+            
+            </summary>
+            <param name="Current_Autorange_Mode">
+            This parameter specifies the current auto range mode.
+            
+            Acceptable values:
+              PM100D_AUTORANGE_CURRENT_OFF (0): current auto range disabled
+              PM100D_AUTORANGE_CURRENT_ON  (1): current auto range enabled
+            
+            </param>
+            <returns>
+            This value shows the status code returned by the function call.
+            
+            For Status Codes see function &lt;Error Message&gt;.
+            
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getCurrentAutorange(System.Boolean@)">
+            <summary>
+            This function returns the current auto range mode.
+            
+            </summary>
+            <param name="Current_Autorange_Mode">
+            This parameter returns the current auto range mode.
+            
+            Return values:
+              PM100D_AUTORANGE_CURRENT_OFF (0): current auto range disabled
+              PM100D_AUTORANGE_CURRENT_ON  (1): current auto range enabled
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setCurrentRange(System.Double)">
+            <summary>
+            This function sets the sensor's current range.
+            
+            </summary>
+            <param name="Current_to_Measure">
+            This parameter specifies the current value to be measured in ampere [A].
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getCurrentRange(System.Int16,System.Double@)">
+            <summary>
+            This function returns the actual current range value.
+            
+            </summary>
+            <param name="Attribute">
+            This parameter specifies the value to be queried.
+            
+            Acceptable values:
+              PM100D_ATTR_SET_VAL  (0): Set value
+              PM100D_ATTR_MIN_VAL  (1): Minimum value
+              PM100D_ATTR_MAX_VAL  (2): Maximum value
+            
+            </param>
+            <param name="Current_Value">
+            This parameter returns the specified current range value in ampere [A].
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setCurrentRef(System.Double)">
+            <summary>
+            This function sets the current reference value.
+            
+            </summary>
+            <param name="Current_Reference_Value">
+            This parameter specifies the current reference value in amperes [A].
+            
+            Remark:
+            This value is used for calculating differences between the actual current value and this current reference value if Current Reference State is ON.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getCurrentRef(System.Int16,System.Double@)">
+            <summary>
+            This function returns the current reference value.
+            
+            </summary>
+            <param name="Attribute">
+            This parameter specifies the value to be queried.
+            
+            Acceptable values:
+              PM100D_ATTR_SET_VAL  (0): Set value
+              PM100D_ATTR_MIN_VAL  (1): Minimum value
+              PM100D_ATTR_MAX_VAL  (2): Maximum value
+              PM100D_ATTR_DFLT_VAL (3): Default value
+            
+            </param>
+            <param name="Current_Reference_Value">
+            This parameter returns the specified current reference value in amperes [A].
+            
+            Remark:
+            This value is used for calculating differences between the actual current value and this current reference value if Current Reference State is ON.
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setCurrentRefState(System.Boolean)">
+            <summary>
+            This function sets the current reference state.
+            
+            </summary>
+            <param name="Current_Reference_State">
+            This parameter specifies the current reference state.
+            
+            Acceptable values:
+              PM100D_CURRENT_REF_OFF (0): current reference disabled
+              PM100D_CURRENT_REF_ON  (1): current reference enabled
+            
+            </param>
+            <returns>
+            This value shows the status code returned by the function call.
+            
+            For Status Codes see function &lt;Error Message&gt;.
+            
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getCurrentRefState(System.Boolean@)">
+            <summary>
+            This function returns the current reference state.
+            
+            </summary>
+            <param name="Current_Reference_State">
+            This parameter returns the current reference state.
+            
+            Return values:
+              PM100D_CURRENT_REF_OFF (0): current reference disabled
+              PM100D_CURRENT_REF_ON  (1): current reference enabled
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setEnergyRange(System.Double)">
+            <summary>
+            This function sets the pyro sensor's energy range.
+            
+            </summary>
+            <param name="Energy_to_Measure">
+            This parameter specifies the energy value in joule [J] to be measured.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getEnergyRange(System.Int16,System.Double@)">
+            <summary>
+            This function returns the pyro sensor's energy range.
+            
+            </summary>
+            <param name="Attribute">
+            This parameter specifies the value to be queried.
+            
+            Acceptable values:
+              PM100D_ATTR_SET_VAL  (0): Set value
+              PM100D_ATTR_MIN_VAL  (1): Minimum value
+              PM100D_ATTR_MAX_VAL  (2): Maximum value
+            
+            </param>
+            <param name="Energy_Value">
+            This parameter returns the specified pyro sensor's energy value in joule [J].
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setEnergyRef(System.Double)">
+            <summary>
+            This function sets the pyro sensor's energy reference value
+            
+            Remark:
+            This value is used for calculating differences between the actual energy value and this energy reference value.
+            
+            </summary>
+            <param name="Energy_Reference_Value">
+            This parameter specifies the pyro sensor's energy reference value in joule [J].
+            
+            Remark:
+            This value is used for calculating differences between the actual energy value and this energy reference value if Energy Reference State is ON.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getEnergyRef(System.Int16,System.Double@)">
+            <summary>
+            This function returns the specified pyro sensor's energy reference value.
+            
+            Remark:
+            The set value is used for calculating differences between the actual energy value and this energy reference value.
+            
+            </summary>
+            <param name="Attribute">
+            This parameter specifies the value to be queried.
+            
+            Acceptable values:
+              PM100D_ATTR_SET_VAL  (0): Set value
+              PM100D_ATTR_MIN_VAL  (1): Minimum value
+              PM100D_ATTR_MAX_VAL  (2): Maximum value
+              PM100D_ATTR_DFLT_VAL (3): Default value
+            
+            </param>
+            <param name="Energy_Reference_Value">
+            This parameter returns the specified pyro sensor's energy reference value in joule [J].
+            
+            Remark:
+            The set value is used for calculating differences between the actual energy value and this energy reference value if Energy Reference State is ON.
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setEnergyRefState(System.Boolean)">
+            <summary>
+            This function sets the instrument's energy reference state.
+            
+            </summary>
+            <param name="Energy_Reference_State">
+            This parameter specifies the energy reference state.
+            
+            Acceptable values:
+              PM100D_ENERGY_REF_OFF (0): no energy reference value used
+              PM100D_ENERGY_REF_ON  (1): energy reference value used
+            
+            </param>
+            <returns>
+            This value shows the status code returned by the function call.
+            
+            For Status Codes see function &lt;Error Message&gt;.
+            
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getEnergyRefState(System.Boolean@)">
+            <summary>
+            This function returns the instrument's energy reference state.
+            
+            </summary>
+            <param name="Energy_Reference_State">
+            This parameter returns the energy reference state.
+            
+            Return values:
+              PM100D_ENERGY_REF_OFF (0): no energy reference value used
+              PM100D_ENERGY_REF_ON  (1): energy reference value used
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getFreqRange(System.Double@,System.Double@)">
+            <summary>
+            This function returns the instruments frequency range.
+            
+            Remark:
+            The frequency of the input signal is calculated over at least 0.3s. So it takes at least 0.3s to get a new frequency value from the instrument.
+            
+            </summary>
+            <param name="Lower_Frequency">
+            This parameter returns the lower instruments frequency.
+            
+            </param>
+            <param name="Upper_Frequency">
+            This parameter returns the upper instruments frequency.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setPowerAutoRange(System.Boolean)">
+            <summary>
+            This function sets the power auto range mode.
+            
+            </summary>
+            <param name="Power_Autorange_Mode">
+            This parameter specifies the power auto range mode.
+            
+            Acceptable values:
+              PM100D_AUTORANGE_POWER_OFF (0): power auto range disabled
+              PM100D_AUTORANGE_POWER_ON  (1): power auto range enabled
+            
+            </param>
+            <returns>
+            This value shows the status code returned by the function call.
+            
+            For Status Codes see function &lt;Error Message&gt;.
+            
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getPowerAutorange(System.Boolean@)">
+            <summary>
+            This function returns the power auto range mode.
+            
+            </summary>
+            <param name="Power_Autorange_Mode">
+            This parameter returns the power auto range mode.
+            
+            Return values:
+              PM100D_AUTORANGE_POWER_OFF (0): power auto range disabled
+              PM100D_AUTORANGE_POWER_ON  (0): power auto range enabled
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setPowerRange(System.Double)">
+            <summary>
+            This function sets the sensor's power range.
+            
+            </summary>
+            <param name="Power_to_Measure">
+            This parameter specifies the power value to be measured in watt [W].
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getPowerRange(System.Int16,System.Double@)">
+            <summary>
+            This function returns the actual power range value.
+            
+            </summary>
+            <param name="Attribute">
+            This parameter specifies the value to be queried.
+            
+            Acceptable values:
+              PM100D_ATTR_SET_VAL  (0): Set value
+              PM100D_ATTR_MIN_VAL  (1): Minimum value
+              PM100D_ATTR_MAX_VAL  (2): Maximum value
+            
+            </param>
+            <param name="Power_Value">
+            This parameter returns the specified power range value in watt [W].
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setPowerRef(System.Double)">
+            <summary>
+            This function sets the power reference value.
+            
+            </summary>
+            <param name="Power_Reference_Value">
+            This parameter specifies the power reference value.
+            
+            Remark:
+            (1) The power reference value has the unit specified with &lt;Set Power Unit&gt;.
+            (2) This value is used for calculating differences between the actual power value and this power reference value if Power Reference State is ON.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getPowerRef(System.Int16,System.Double@)">
+            <summary>
+            This function returns the power reference value.
+            
+            </summary>
+            <param name="Attribute">
+            This parameter specifies the value to be queried.
+            
+            Acceptable values:
+              PM100D_ATTR_SET_VAL  (0): Set value
+              PM100D_ATTR_MIN_VAL  (1): Minimum value
+              PM100D_ATTR_MAX_VAL  (2): Maximum value
+              PM100D_ATTR_DFLT_VAL (3): Default value
+            
+            </param>
+            <param name="Power_Reference_Value">
+            This parameter returns the specified power reference value.
+            
+            Remark:
+            (1) The power reference value has the unit specified with &lt;Set Power Unit&gt;.
+            (2) This value is used for calculating differences between the actual power value and this power reference value if Power Reference State is ON.
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setPowerRefState(System.Boolean)">
+            <summary>
+            This function sets the power reference state.
+            
+            </summary>
+            <param name="Power_Reference_State">
+            This parameter specifies the power reference state.
+            
+            Acceptable values:
+              PM100D_POWER_REF_OFF (0): power reference disabled
+              PM100D_POWER_REF_ON  (1): power reference enabled
+            
+            </param>
+            <returns>
+            This value shows the status code returned by the function call.
+            
+            For Status Codes see function &lt;Error Message&gt;.
+            
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getPowerRefState(System.Boolean@)">
+            <summary>
+            This function returns the power reference state.
+            
+            </summary>
+            <param name="Power_Reference_State">
+            This parameter returns the power reference state.
+            
+            Return values:
+              PM100D_POWER_REF_OFF (0): power reference disabled
+              PM100D_POWER_REF_ON  (1): power reference enabled
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setPowerUnit(System.Int16)">
+            <summary>
+            This function sets the unit of the power value.
+            
+            </summary>
+            <param name="Power_Unit">
+            This parameter specifies the unit of the pover value.
+            
+            Acceptable values:
+              PM100D_POWER_UNIT_WATT (0): power in Watt
+              PM100D_POWER_UNIT_DBM  (1): power in dBm
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getPowerUnit(System.Int16@)">
+            <summary>
+            This function returns the unit of the power value.
+            
+            </summary>
+            <param name="Power_Unit">
+            This parameter returns the unit of the power value.
+            
+            Return values:
+              PM100D_POWER_UNIT_WATT (0): power in Watt
+              PM100D_POWER_UNIT_DBM  (1): power in dBm
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setVoltageAutoRange(System.Boolean)">
+            <summary>
+            This function sets the voltage auto range mode.
+            
+            </summary>
+            <param name="Voltage_Autorange_Mode">
+            This parameter specifies the voltage auto range mode.
+            
+            Acceptable values:
+              PM100D_AUTORANGE_VOLTAGE_OFF (0): voltage auto range disabled
+              PM100D_AUTORANGE_VOLTAGE_ON  (1): voltage auto range enabled
+            
+            </param>
+            <returns>
+            This value shows the status code returned by the function call.
+            
+            For Status Codes see function &lt;Error Message&gt;.
+            
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getVoltageAutorange(System.Boolean@)">
+            <summary>
+            This function returns the voltage auto range mode.
+            
+            </summary>
+            <param name="Voltage_Autorange_Mode">
+            This parameter returns the voltage auto range mode.
+            
+            Return values:
+              PM100D_AUTORANGE_VOLTAGE_OFF (0): voltage auto range disabled
+              PM100D_AUTORANGE_VOLTAGE_ON  (1): voltage auto range enabled
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setVoltageRange(System.Double)">
+            <summary>
+            This function sets the sensor's voltage range.
+            
+            </summary>
+            <param name="Voltage_to_Measure">
+            This parameter specifies the voltage value to be measured in volts [V].
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getVoltageRange(System.Int16,System.Double@)">
+            <summary>
+            This function returns the actual voltage range value.
+            
+            </summary>
+            <param name="Attribute">
+            This parameter specifies the value to be queried.
+            
+            Acceptable values:
+              PM100D_ATTR_SET_VAL  (0): Set value
+              PM100D_ATTR_MIN_VAL  (1): Minimum value
+              PM100D_ATTR_MAX_VAL  (2): Maximum value
+            
+            </param>
+            <param name="Voltage_Value">
+            This parameter returns the specified voltage range value in volts [V].
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setVoltageRef(System.Double)">
+            <summary>
+            This function sets the voltage reference value.
+            
+            </summary>
+            <param name="Voltage_Reference_Value">
+            This parameter specifies the voltage reference value in volts [V].
+            
+            Remark:
+            This value is used for calculating differences between the actual voltage value and this voltage reference value if Voltage Reference State is ON.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getVoltageRef(System.Int16,System.Double@)">
+            <summary>
+            This function returns the voltage reference value.
+            
+            </summary>
+            <param name="Attribute">
+            This parameter specifies the value to be queried.
+            
+            Acceptable values:
+              PM100D_ATTR_SET_VAL  (0): Set value
+              PM100D_ATTR_MIN_VAL  (1): Minimum value
+              PM100D_ATTR_MAX_VAL  (2): Maximum value
+              PM100D_ATTR_DFLT_VAL (3): Default value
+            
+            </param>
+            <param name="Voltage_Reference_Value">
+            This parameter returns the specified voltage reference value in volts [V].
+            
+            Remark:
+            This value is used for calculating differences between the actual voltage value and this voltage reference value if Voltage Reference State is ON.
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setVoltageRefState(System.Boolean)">
+            <summary>
+            This function sets the voltage reference state.
+            
+            </summary>
+            <param name="Voltage_Reference_State">
+            This parameter specifies the voltage reference state.
+            
+            Acceptable values:
+              PM100D_VOLTAGE_REF_OFF (0): voltage reference disabled
+              PM100D_VOLTAGE_REF_ON  (1): voltage reference enabled
+            
+            </param>
+            <returns>
+            This value shows the status code returned by the function call.
+            
+            For Status Codes see function &lt;Error Message&gt;.
+            
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getVoltageRefState(System.Boolean@)">
+            <summary>
+            This function returns the voltage reference state.
+            
+            </summary>
+            <param name="Voltage_Reference_State">
+            This parameter returns the voltage reference state.
+            
+            Return values:
+              PM100D_VOLTAGE_REF_OFF (0): voltage reference disabled
+              PM100D_VOLTAGE_REF_ON  (1): voltage reference enabled
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setPeakThreshold(System.Double)">
+            <summary>
+            This function sets the peak detector threshold.
+            
+            Remark:
+            Peak detector threshold is in percent [%] of the maximum from the actual measurements range.
+            
+            </summary>
+            <param name="Peak_Detector_Threshold">
+            This parameter specifies the peak detector threshold.
+            
+            Remark:
+            Peak detector threshold is in percent [%] of the maximum from the actual measurements range.
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getPeakThreshold(System.Int16,System.Double@)">
+            <summary>
+            This function returns the peak detector threshold.
+            
+            </summary>
+            <param name="Attribute">
+            This parameter specifies the value to be queried.
+            
+            Acceptable values:
+              PM100D_ATTR_SET_VAL  (0): Set value
+              PM100D_ATTR_MIN_VAL  (1): Minimum value
+              PM100D_ATTR_MAX_VAL  (2): Maximum value
+              PM100D_ATTR_DFLT_VAL (3): Default value
+            
+            </param>
+            <param name="Peak_Detector_Threshold">
+            This parameter returns the peak detector threshold.
+            
+            Remark:
+            Peak detector threshold is in percent [%] of the maximum from the actual measurements range.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setInputFilterState(System.Boolean)">
+            <summary>
+            This function sets the instrument's photodiode input filter state.
+            
+            </summary>
+            <param name="Photodiode_Input_Filter_State">
+            This parameter specifies the input filter mode.
+            
+            Acceptable values:
+              PM100D_INPUT_FILTER_STATE_OFF (0) input filter off
+              PM100D_INPUT_FILTER_STATE_ON  (1) input filter on
+            </param>
+            <returns>
+            This value shows the status code returned by the function call.
+            
+            For Status Codes see function &lt;Error Message&gt;.
+            
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getInputFilterState(System.Boolean@)">
+            <summary>
+            This function returns the instrument's photodiode input filter state.
+            
+            </summary>
+            <param name="Photodiode_Input_Filter_State">
+            This parameter returns the input filter state.
+            
+            Return values:
+              PM100D_INPUT_FILTER_STATE_OFF (0) input filter off
+              PM100D_INPUT_FILTER_STATE_ON  (1) input filter on
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setAccelState(System.Boolean)">
+            <summary>
+            This function sets the thermopile acceleration state.
+            
+            </summary>
+            <param name="Thermopile_Accelerator_State">
+            This parameter specifies the thermopile acceleration mode.
+            
+            Acceptable values:
+              PM100D_ACCELERATION_STATE_OFF (0): thermopile acceleration off
+              PM100D_ACCELERATION_STATE_ON  (1): thermopile acceleration on
+            
+            </param>
+            <returns>
+            This value shows the status code returned by the function call.
+            
+            For Status Codes see function &lt;Error Message&gt;.
+            
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getAccelState(System.Boolean@)">
+            <summary>
+            This function returns the thermopile acceleration state.
+            
+            </summary>
+            <param name="Thermopile_Accelerator_State">
+            This parameter returns the thermopile acceleration mode.
+            
+            Return values:
+              PM100D_ACCELERATION_STATE_OFF (0): thermopile acceleration off
+              PM100D_ACCELERATION_STATE_ON  (1): thermopile acceleration on
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setAccelMode(System.Boolean)">
+            <summary>
+            This function sets the thermopile acceleration auto mode.
+            
+            While thermopile acceleration improves displaying changing measurement values it unfortunately adds extra noise which can become noticeable on constant values measurements. With acceleration mode set to AUTO the instrument enables the acceleration circuitry after big measurement values for five times of "Tau". See also functions "Set Thermopile Accelerator Tau" and "Set Thermopile Accelerator  State".
+            
+            With calling "Set Thermopile Accelerator State" the accelerator mode will always be reset to MANUAL.
+            
+            </summary>
+            <param name="Thermopile_Accelerator_Mode">
+            This parameter specifies the thermopile acceleration mode.
+            
+            Acceptable values:
+              PM100D_ACCELERATION_MANUAL (0): auto acceleration off
+              PM100D_ACCELERATION_AUTO   (1): auto acceleration on
+            
+            </param>
+            <returns>
+            This value shows the status code returned by the function call.
+            
+            For Status Codes see function &lt;Error Message&gt;.
+            
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getAccelMode(System.Boolean@)">
+            <summary>
+            This function returns the thermopile acceleration mode.
+            
+            </summary>
+            <param name="Thermopile_Accelerator_Mode">
+            This parameter returns the thermopile acceleration mode.
+            
+            Return values:
+              PM100D_ACCELERATION_MANUAL (0): auto acceleration off
+              PM100D_ACCELERATION_AUTO   (1): auto acceleration on
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setAccelTau(System.Double)">
+            <summary>
+            This function sets the thermopile acceleration time constant in seconds [s].
+            
+            </summary>
+            <param name="Thermopile_Accelerator_Tau">
+            This parameter specifies the thermopile acceleration time constant in seconds [s].
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getAccelTau(System.Int16,System.Double@)">
+            <summary>
+            This function returns the thermopile acceleration time constant in seconds [s].
+            
+            </summary>
+            <param name="Attribute">
+            This parameter specifies the value to be queried.
+            
+            Acceptable values:
+              PM100D_ATTR_SET_VAL  (0): Set value
+              PM100D_ATTR_MIN_VAL  (1): Minimum value
+              PM100D_ATTR_MAX_VAL  (2): Maximum value
+              PM100D_ATTR_DFLT_VAL (3): Default value
+            
+            </param>
+            <param name="Thermopile_Accelerator_Tau">
+            This parameter returns the thermopile acceleration time constant in seconds [s].
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setInputAdapterType(System.Int16)">
+            <summary>
+            This function sets the sensor type to assume for custom sensors without calibration data memory connected to the instrument.
+            
+            </summary>
+            <param name="Custom_Sensor_Type">
+            This parameter specifies the custom sensor type.
+            
+            Acceptable values:
+             SENSOR_TYPE_PD_SINGLE          0x01 // Photodiode sensor
+             SENSOR_TYPE_THERMO             0x02 // Thermopile sensor
+             SENSOR_TYPE_PYRO               0x03 // Pyroelectric sensor
+            
+            Value SENSOR_TYPE_PYRO is only available for energy meter instruments.
+            </param>
+            <returns>
+            This value shows the status code returned by the function call.
+            
+            For Status Codes see function &lt;Error Message&gt;.
+            
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getInputAdapterType(System.Int16@)">
+            <summary>
+            This function returns the assumed sensor type for custom sensors without calibration data memory connected to the instrument.
+            
+            </summary>
+            <param name="Custom_Sensor_Type">
+            This parameter returns the custom sensor type.
+            
+            Remark:
+            The meanings of the obtained sensor type are:
+            
+            Sensor Types:
+             SENSOR_TYPE_PD_SINGLE          0x01 // Photodiode sensor
+             SENSOR_TYPE_THERMO             0x02 // Thermopile sensor
+             SENSOR_TYPE_PYRO               0x03 // Pyroelectric sensor
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.measCurrent(System.Double@)">
+            <summary>
+            This function is used to obtain current readings from the instrument. 
+            
+            Remark:
+            This function starts a new measurement cycle and after finishing measurement the result is received. Subject to the actual Average Count this may take up to seconds. Refer to &lt;Set/Get Average Count&gt;. 
+            </summary>
+            <param name="Current">
+            This parameter returns the current in amperes [A].
+            
+            Remark:
+            This function starts a new measurement cycle and after finishing measurement the result is received. Subject to the actual Average Count this may take up to seconds. Refer to &lt;Set/Get Average Count&gt;. 
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.measVoltage(System.Double@)">
+            <summary>
+            This function is used to obtain voltage readings from the instrument. 
+            
+            Remark:
+            This function starts a new measurement cycle and after finishing measurement the result is received. Subject to the actual Average Count this may take up to seconds. Refer to &lt;Set/Get Average Count&gt;. 
+            </summary>
+            <param name="Voltage">
+            This parameter returns the voltage in volts [V].
+            
+            Remark:
+            This function starts a new measurement cycle and after finishing measurement the result is received. Subject to the actual Average Count this may take up to seconds. Refer to &lt;Set/Get Average Count&gt;. 
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.measPower(System.Double@)">
+            <summary>
+            This function is used to obtain power readings from the instrument. 
+            
+            Remark:
+            This function starts a new measurement cycle and after finishing measurement the result is received. Subject to the actual Average Count this may take up to seconds. Refer to &lt;Set/Get Average Count&gt;. 
+            </summary>
+            <param name="Power">
+            This parameter returns the power in the selected unit.
+            
+            Remark:
+            (1) This function starts a new measurement cycle and after finishing measurement the result is received. Subject to the actual Average Count this may take up to seconds. Refer to &lt;Set/Get Average Count&gt;. 
+            (2) Select the unit with &lt;Set Power Unit&gt;.
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.measEnergy(System.Double@)">
+            <summary>
+            This function is used to obtain energy readings from the instrument. 
+            
+            </summary>
+            <param name="Energy">
+            This parameter returns the actual measured energy value in joule [J].
+            
+            Remark:
+            This function starts a new measurement cycle and after finishing measurement the result is received. Subject to the actual Average Count this may take up to seconds. Refer to &lt;Set/Get Average Count&gt;. 
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.measPowerDens(System.Double@)">
+            <summary>
+            This function is used to obtain power density readings from the instrument. 
+            
+            </summary>
+            <param name="Power_Density">
+            This parameter returns the actual measured power density in watt per square centimeter [W/cm?].
+            
+            Remark:
+            This function starts a new measurement cycle and after finishing measurement the result is received. Subject to the actual Average Count this may take up to seconds. Refer to &lt;Set/Get Average Count&gt;.
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.measEnergyDens(System.Double@)">
+            <summary>
+            This function is used to obtain energy density readings from the instrument. 
+            
+            </summary>
+            <param name="Energy_Density">
+            This parameter returns the actual measured energy in joule per square centimeter [J/cm?].
+            
+            Remark:
+            This function starts a new measurement cycle and after finishing measurement the result is received. Subject to the actual Average Count this may take up to seconds. Refer to &lt;Set/Get Average Count&gt;.
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.measFreq(System.Double@)">
+            <summary>
+            This function is used to obtain frequency readings from the instrument. 
+            
+            </summary>
+            <param name="Frequency">
+            This parameter returns the actual measured frequency of the inpot signal. 
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.measAuxAD0(System.Double@)">
+            <summary>
+            This function is used to obtain voltage readings from the instrument's auxiliary AD0 input. 
+            
+            Note: The function is available on PM200 only.
+            </summary>
+            <param name="Voltage">
+            This parameter returns the voltage in volt.
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.measAuxAD1(System.Double@)">
+            <summary>
+            This function is used to obtain voltage readings from the instrument's auxiliary AD1 input. 
+            
+            Note: The function is available on PM200 only.
+            </summary>
+            <param name="Voltage">
+            This parameter returns the voltage in volt.
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.measEmmHumidity(System.Double@)">
+            <summary>
+            This function is used to obtain relative humidity readings from the Environment Monitor Module (EMM) connected to the instrument. 
+            
+            Note: The function is available on PM200 only. The function will return an error when no EMM is connected.
+            </summary>
+            <param name="Humidity">
+            This parameter returns the relative humidity in %.
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.measEmmTemperature(System.Double@)">
+            <summary>
+            This function is used to obtain temperature readings from the Environment Monitor Module (EMM) connected to the instrument. 
+            
+            Note: The function is available on PM200 only. The function will return an error when no EMM is connected.
+            </summary>
+            <param name="Temperature">
+            This parameter returns the temperature in ?C
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.identificationQuery(System.Text.StringBuilder,System.Text.StringBuilder,System.Text.StringBuilder,System.Text.StringBuilder)">
+            <summary>
+            This function returns the device identification information.
+            </summary>
+            <param name="Manufacturer_Name">
+            This parameter returns the manufacturer name.
+            
+            Notes:
+            (1) The array must contain at least 256 elements ViChar[256].
+            (2) You may pass VI_NULL if you do not need this value.
+            
+            </param>
+            <param name="Device_Name">
+            This parameter returns the device name.
+            
+            Notes:
+            (1) The array must contain at least 256 elements ViChar[256].
+            (2) You may pass VI_NULL if you do not need this value.
+            
+            </param>
+            <param name="Serial_Number">
+            This parameter returns the device serial number.
+            
+            Notes:
+            (1) The array must contain at least 256 elements ViChar[256].
+            (2) You may pass VI_NULL if you do not need this value.
+            
+            </param>
+            <param name="Firmware_Revision">
+            This parameter returns the device firmware revision.
+            
+            Notes:
+            (1) The array must contain at least 256 elements ViChar[256].
+            (2) You may pass VI_NULL if you do not need this value.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.reset">
+            <summary>
+            This function resets the device.
+            </summary>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.selfTest(System.Int16@,System.Text.StringBuilder)">
+            <summary>
+            This function runs the device self test routine and returns the test result.
+            </summary>
+            <param name="Self_Test_Result">
+            This parameter contains the value returned from the device self test routine. A retured zero value indicates a successful run, a value other than zero indicates failure.
+            </param>
+            <param name="Description">
+            This parameter returns the interpreted code as an user readable message string.
+            
+            Notes:
+            (1) The array must contain at least 256 elements ViChar[256].
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.errorQueryMode(System.Boolean)">
+            <summary>
+            This function selects the driver's error query mode.
+            </summary>
+            <param name="Mode">
+            This parameter specifies the driver's error query mode. 
+            
+            If set to Automatic each driver function queries the instrument's error queue and in case an error occured returns the error number.
+            
+            If set to Manual the driver does not query the instrument for errors and therefore a driver function does not return instrument errors. You should use &lt;Error Query&gt; to manually query the instrument's error queue.
+            
+            VI_OFF (0): Manual error query.
+            VI_ON  (1): Automatic error query (default).
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.errorQuery(System.Int32@,System.Text.StringBuilder)">
+            <summary>
+            This function queries the instrument's error queue manually. 
+            Use this function to query the instrument's error queue if the driver's error query mode is set to manual query. 
+            
+            Notes:
+            (1) The returned values are stored in the drivers error store. You may use &lt;Error Message&gt; to get a descriptive text at a later point of time.
+            </summary>
+            <param name="Error_Number">
+            This parameter returns the instrument error number.
+            
+            Notes:
+            (1) You may pass VI_NULL if you don't need this value.
+            
+            </param>
+            <param name="Error_Message">
+            This parameter returns the instrument error message.
+            
+            Notes:
+            (1) The array must contain at least 256 elements ViChar[256].
+            (2) You may pass VI_NULL if you do not need this value.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.revisionQuery(System.Text.StringBuilder,System.Text.StringBuilder)">
+            <summary>
+            This function returns the revision numbers of the instrument driver and the device firmware.
+            </summary>
+            <param name="Instrument_Driver_Revision">
+            This parameter returns the Instrument Driver revision.
+            
+            Notes:
+            (1) The array must contain at least 256 elements ViChar[256].
+            (2) You may pass VI_NULL if you do not need this value.
+            
+            </param>
+            <param name="Firmware_Revision">
+            This parameter returns the device firmware revision. 
+            
+            Notes:
+            (1) The array must contain at least 256 elements ViChar[256].
+            (2) You may pass VI_NULL if you do not need this value.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setDigIoDirection(System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            This function sets the digital I/O port direction.
+            
+            Note: The function is available on PM200 only.
+            </summary>
+            <param name="IO_0">
+            This parameter specifies the I/O port #0 direction.
+            
+            Input:  VI_OFF (0)
+            Output: VI_ON  (1)
+            
+            </param>
+            <param name="IO_1">
+            This parameter specifies the I/O port #1 direction.
+            
+            Input:  VI_OFF (0)
+            Output: VI_ON  (1)
+            
+            </param>
+            <param name="IO_2">
+            This parameter specifies the I/O port #2 direction.
+            
+            Input:  VI_OFF (0)
+            Output: VI_ON  (1)
+            
+            </param>
+            <param name="IO_3">
+            This parameter specifies the I/O port #3 direction.
+            
+            Input:  VI_OFF (0)
+            Output: VI_ON  (1)
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getDigIoDirection(System.Boolean@,System.Boolean@,System.Boolean@,System.Boolean@)">
+            <summary>
+            This function returns the digital I/O port direction.
+            
+            Note: The function is available on PM200 only.
+            </summary>
+            <param name="IO_0">
+            This parameter returns the I/O port #0 direction where VI_OFF (0) indicates input and VI_ON (1) indicates output.
+            
+            Note: You may pass VI_NULL if you don't need this value.
+            
+            </param>
+            <param name="IO_1">
+            This parameter returns the I/O port #1 direction where VI_OFF (0) indicates input and VI_ON (1) indicates output.
+            
+            Note: You may pass VI_NULL if you don't need this value.
+            
+            </param>
+            <param name="IO_2">
+            This parameter returns the I/O port #2 direction where VI_OFF (0) indicates input and VI_ON (1) indicates output.
+            
+            Note: You may pass VI_NULL if you don't need this value.
+            
+            </param>
+            <param name="IO_3">
+            This parameter returns the I/O port #3 direction where VI_OFF (0) indicates input and VI_ON (1) indicates output.
+            
+            Note: You may pass VI_NULL if you don't need this value.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.setDigIoOutput(System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            This function sets the digital I/O outputs.
+            
+            Note: Only ports configured as outputs are affected by this function. Use &lt;Set Digital I/O Direction&gt; to configure ports as outputs.
+            
+            Note: The function is available on PM200 only.
+            </summary>
+            <param name="IO_0">
+            This parameter specifies the I/O port #0 output.
+            
+            Low level:  VI_OFF (0)
+            High level: VI_ON  (1)
+            
+            </param>
+            <param name="IO_1">
+            This parameter specifies the I/O port #1 output.
+            
+            Low level:  VI_OFF (0)
+            High level: VI_ON  (1)
+            
+            </param>
+            <param name="IO_2">
+            This parameter specifies the I/O port #2 output.
+            
+            Low level:  VI_OFF (0)
+            High level: VI_ON  (1)
+            
+            </param>
+            <param name="IO_3">
+            This parameter specifies the I/O port #3 output.
+            
+            Low level:  VI_OFF (0)
+            High level: VI_ON  (1)
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getDigIoOutput(System.Boolean@,System.Boolean@,System.Boolean@,System.Boolean@)">
+            <summary>
+            This function returns the digital I/O output settings.
+            
+            Note: The function is available on PM200 only.
+            </summary>
+            <param name="IO_0">
+            This parameter returns the I/O port #0 output where VI_OFF (0) indicates low level and VI_ON (1) indicates high level.
+            
+            Note: You may pass VI_NULL if you don't need this value.
+            
+            </param>
+            <param name="IO_1">
+            This parameter returns the I/O port #1 output where VI_OFF (0) indicates low level and VI_ON (1) indicates high level.
+            
+            Note: You may pass VI_NULL if you don't need this value.
+            
+            </param>
+            <param name="IO_2">
+            This parameter returns the I/O port #2 output where VI_OFF (0) indicates low level and VI_ON (1) indicates high level.
+            
+            Note: You may pass VI_NULL if you don't need this value.
+            
+            </param>
+            <param name="IO_3">
+            This parameter returns the I/O port #3 output where VI_OFF (0) indicates low level and VI_ON (1) indicates high level.
+            
+            Note: You may pass VI_NULL if you don't need this value.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getDigIoPort(System.Boolean@,System.Boolean@,System.Boolean@,System.Boolean@)">
+            <summary>
+            This function returns the actual digital I/O port level.
+            
+            Note: The function is available on PM200 only.
+            </summary>
+            <param name="IO_0">
+            This parameter returns the I/O port #0 level where VI_OFF (0) indicates low level and VI_ON (1) indicates high level.
+            
+            Note: You may pass VI_NULL if you don't need this value.
+            
+            </param>
+            <param name="IO_1">
+            This parameter returns the I/O port #1 level where VI_OFF (0) indicates low level and VI_ON (1) indicates high level.
+            
+            Note: You may pass VI_NULL if you don't need this value.
+            
+            </param>
+            <param name="IO_2">
+            This parameter returns the I/O port #2 level where VI_OFF (0) indicates low level and VI_ON (1) indicates high level.
+            
+            Note: You may pass VI_NULL if you don't need this value.
+            
+            </param>
+            <param name="IO_3">
+            This parameter returns the I/O port #3 level where VI_OFF (0) indicates low level and VI_ON (1) indicates high level.
+            
+            Note: You may pass VI_NULL if you don't need this value.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.writeRaw(System.String)">
+            <summary>
+            This function writes directly to the instrument.
+            </summary>
+            <param name="Command">
+            Data to send to the instrument.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.readRaw(System.Text.StringBuilder,System.UInt32,System.UInt32@)">
+            <summary>
+            This function reads directly from the instrument.
+            
+            </summary>
+            <param name="Buffer">
+            Data read from the instrument.
+            </param>
+            <param name="Size">
+            This parameter specifies the buffer size.
+            
+            </param>
+            <param name="Return_Count">
+            Number of bytes actually transferred.
+            
+            Notes:
+            (1) You may pass VI_NULL if you don't need this value.
+            
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="M:Thorlabs.PM100D.PM100D.getSensorInfo(System.Text.StringBuilder,System.Text.StringBuilder,System.Text.StringBuilder,System.Int16@,System.Int16@,System.Int16@)">
+            <summary>
+            This function is used to obtain informations from the connected sensor like sensor name, serial number, calibration message, sensor type, sensor subtype and sensor flags.  
+            
+            Remark:
+            The meanings of the obtained sensor type, subtype and flags are:
+            
+            Sensor Types:
+             SENSOR_TYPE_NONE               0x00 // No sensor
+             SENSOR_TYPE_PD_SINGLE          0x01 // Photodiode sensor
+             SENSOR_TYPE_THERMO             0x02 // Thermopile sensor
+             SENSOR_TYPE_PYRO               0x03 // Pyroelectric sensor
+            
+            Sensor Subtypes:
+             SENSOR_SUBTYPE_NONE            0x00 // No sensor
+             
+            Sensor Subtypes Photodiode:
+             SENSOR_SUBTYPE_PD_ADAPTER      0x01 // Photodiode adapter
+             SENSOR_SUBTYPE_PD_SINGLE_STD   0x02 // Photodiode sensor
+             SENSOR_SUBTYPE_PD_SINGLE_FSR   0x03 // Photodiode sensor with 
+                                                    integrated filter
+                                                    identified by position 
+             SENSOR_SUBTYPE_PD_SINGLE_STD_T 0x12 // Photodiode sensor with
+                                                    temperature sensor
+            Sensor Subtypes Thermopile:
+             SENSOR_SUBTYPE_THERMO_ADAPTER  0x01 // Thermopile adapter
+             SENSOR_SUBTYPE_THERMO_STD      0x02 // Thermopile sensor
+             SENSOR_SUBTYPE_THERMO_STD_T    0x12 // Thermopile sensor with 
+                                                    temperature sensor
+            Sensor Subtypes Pyroelectric Sensor:
+             SENSOR_SUBTYPE_PYRO_ADAPTER    0x01 // Pyroelectric adapter
+             SENSOR_SUBTYPE_PYRO_STD        0x02 // Pyroelectric sensor
+             SENSOR_SUBTYPE_PYRO_STD_T      0x12 // Pyroelectric sensor with
+                                                    temperature sensor
+            Sensor Flags:
+             PM100D_SENS_FLAG_IS_POWER     0x0001 // Power sensor
+             PM100D_SENS_FLAG_IS_ENERGY    0x0002 // Energy sensor
+             PM100D_SENS_FLAG_IS_RESP_SET  0x0010 // Responsivity settable
+             PM100D_SENS_FLAG_IS_WAVEL_SET 0x0020 // Wavelength settable
+             PM100D_SENS_FLAG_IS_TAU_SET   0x0040 // Time constant settable
+             PM100D_SENS_FLAG_HAS_TEMP     0x0100 // With Temperature sensor 
+            </summary>
+            <param name="Sensor_Name">
+            This parameter returns the name of the connected sensor.
+            
+            </param>
+            <param name="Sensor_Serial_Number">
+            This parameter returns the serial number of the connected sensor.
+            </param>
+            <param name="Sensor_Calibration_Message">
+            This parameter returns the calibration message of the connected sensor.
+            
+            </param>
+            <param name="Sensor_Type">
+            This parameter returns the sensor type of the connected sensor.
+            
+            Remark:
+            The meanings of the obtained sensor type are:
+            
+            Sensor Types:
+             SENSOR_TYPE_NONE               0x00 // No sensor
+             SENSOR_TYPE_PD_SINGLE          0x01 // Photodiode sensor
+             SENSOR_TYPE_THERMO             0x02 // Thermopile sensor
+             SENSOR_TYPE_PYRO               0x03 // Pyroelectric sensor
+            </param>
+            <param name="Sensor_Subtype">
+            This parameter returns the subtype of the connected sensor.
+            
+            Remark:
+            The meanings of the obtained sensor subtype are:
+            
+            Sensor Subtypes:
+             SENSOR_SUBTYPE_NONE            0x00 // No sensor
+             
+            Sensor Subtypes Photodiode:
+             SENSOR_SUBTYPE_PD_ADAPTER      0x01 // Photodiode adapter
+             SENSOR_SUBTYPE_PD_SINGLE_STD   0x02 // Photodiode sensor
+             SENSOR_SUBTYPE_PD_SINGLE_FSR   0x03 // Photodiode sensor with 
+                                                    integrated filter
+                                                    identified by position 
+             SENSOR_SUBTYPE_PD_SINGLE_STD_T 0x12 // Photodiode sensor with
+                                                    temperature sensor
+            Sensor Subtypes Thermopile:
+             SENSOR_SUBTYPE_THERMO_ADAPTER  0x01 // Thermopile adapter
+             SENSOR_SUBTYPE_THERMO_STD      0x02 // Thermopile sensor
+             SENSOR_SUBTYPE_THERMO_STD_T    0x12 // Thermopile sensor with 
+                                                    temperature sensor
+            Sensor Subtypes Pyroelectric Sensor:
+             SENSOR_SUBTYPE_PYRO_ADAPTER    0x01 // Pyroelectric adapter
+             SENSOR_SUBTYPE_PYRO_STD        0x02 // Pyroelectric sensor
+             SENSOR_SUBTYPE_PYRO_STD_T      0x12 // Pyroelectric sensor with
+                                                    temperature sensor
+            </param>
+            <param name="Sensor_Flags">
+            This parameter returns the flags of the connected sensor.
+            
+            Remark:
+            The meanings of the obtained sensor flags are:
+            
+            Sensor Flags:
+             PM100D_SENS_FLAG_IS_POWER     0x0001 // Power sensor
+             PM100D_SENS_FLAG_IS_ENERGY    0x0002 // Energy sensor
+             PM100D_SENS_FLAG_IS_RESP_SET  0x0010 // Responsivity settable
+             PM100D_SENS_FLAG_IS_WAVEL_SET 0x0020 // Wavelength settable
+             PM100D_SENS_FLAG_IS_TAU_SET   0x0040 // Time constant settable
+             PM100D_SENS_FLAG_HAS_TEMP     0x0100 // With Temperature sensor
+            </param>
+            <returns>
+            This is the error code returned by the function call. For error codes and descriptions see &lt;Error Message&gt;.
+            </returns>
+        </member>
+        <member name="P:Thorlabs.PM100D.PM100D.Handle">
+            <summary>
+            Gets the instrument handle.
+            </summary>
+            <value>
+            The value is the IntPtr that represents the handle to the instrument.
+            </value>
+        </member>
+    </members>
+</doc>
