@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("QStations")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.3.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+26888c4fe51663d47c06e88b4add743c6891be82")]
 [assembly: System.Reflection.AssemblyProductAttribute("QStations")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QStations")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.2.0")]
