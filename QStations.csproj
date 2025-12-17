@@ -7,8 +7,8 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
-    <FileVersion>1.0.3.0</FileVersion>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.5.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,10 +21,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Matrox.MatroxImagingLibrary">
+      <HintPath>..\MILtest_formApp\MDigProcessWinForms\Matrox.MatroxImagingLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>bin\Debug\net8.0-windows\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PythonAlgorithmEngine.Core">
       <HintPath>PythonAlgorithmEngine_v1.0\lib\PythonAlgorithmEngine.Core.dll</HintPath>
     </Reference>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QStations;
+using System;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -6,6 +7,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 //using System.Windows.Media.Imaging; // 這個類別不需要 WPF 相關的命名空間
+
 
 namespace M5.Core
 {
@@ -59,7 +61,7 @@ namespace M5.Core
 
         public async Task ConnectAsync(string host, int port)
         {
-            if (ConnectionState == M5ConnectionState.Connected)
+            if (ConnectionState == M5ConnectionState.Connected)                
                 return;
 
             SetState(M5ConnectionState.Connecting);

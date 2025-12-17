@@ -11,14 +11,13 @@
 using System;
 using System.Reflection;
 
-/*      //與Qstation的bin裡面的屬性重複？先remark看看=>OK --------------------by Eric:2025-11-26
-[assembly: System.Reflection.AssemblyCompanyAttribute("M5.Core")]
-[assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
-[assembly: System.Reflection.AssemblyProductAttribute("M5.Core")]
-[assembly: System.Reflection.AssemblyTitleAttribute("M5.Core")]
-[assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
-*/
+//[assembly: System.Reflection.AssemblyCompanyAttribute("M5.Core")]
+//[assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
+//[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+//[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+020f9f1f5bb456801d63b7e279bddd5c0b4cebb1")]
+//[assembly: System.Reflection.AssemblyProductAttribute("M5.Core")]
+//[assembly: System.Reflection.AssemblyTitleAttribute("M5.Core")]
+//[assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
+
 // 由 MSBuild WriteCodeFragment 類別產生。
 

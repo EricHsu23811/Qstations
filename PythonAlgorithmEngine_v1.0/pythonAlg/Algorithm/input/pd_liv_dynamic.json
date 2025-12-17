@@ -1,0 +1,37 @@
+{
+  "raw_data": {
+    "currents": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "powers": [
+      0.009,
+      0.027,
+      0.049,
+      0.075,
+      0.115,
+      0.359,
+      2.716,
+      5.453,
+      8.075,
+      10.783,
+      13.476
+    ],
+    "threshold_power": 1
+  },
+  "threshold_rules": {
+    "slope_LSL": 0.6,
+    "max_power_LSL": 11,
+    "threshold_power_LSL": 1,
+    "threshold_power_USL": 1.5
+  }
+}

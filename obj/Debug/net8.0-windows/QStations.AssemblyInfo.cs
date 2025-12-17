@@ -13,11 +13,11 @@ using System.Reflection;
 
 [assembly: System.Reflection.AssemblyCompanyAttribute("QStations")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.3.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+26888c4fe51663d47c06e88b4add743c6891be82")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.5.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+020f9f1f5bb456801d63b7e279bddd5c0b4cebb1")]
 [assembly: System.Reflection.AssemblyProductAttribute("QStations")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QStations")]
-[assembly: System.Reflection.AssemblyVersionAttribute("1.0.2.0")]
+[assembly: System.Reflection.AssemblyVersionAttribute("1.0.3.0")]
 [assembly: System.Runtime.Versioning.TargetPlatformAttribute("Windows7.0")]
 [assembly: System.Runtime.Versioning.SupportedOSPlatformAttribute("Windows7.0")]
 

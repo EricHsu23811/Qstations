@@ -57,8 +57,8 @@ namespace M5.Core
                 Arguments = $"\"{scriptPath}\" {arguments}",
                 WorkingDirectory = workingDirectory,
 
-                //UseShellExecute = true, //打開cmd視窗做debug用
-                //CreateNoWindow = false, //打開cmd視窗做debug用
+                //UseShellExecute = true, //打開cmd視窗做debug用--------
+                //CreateNoWindow = false, //打開cmd視窗做debug用--------
                 UseShellExecute = false,  //關閉cmd視窗
                 CreateNoWindow = true,    //關閉cmd視窗
             };

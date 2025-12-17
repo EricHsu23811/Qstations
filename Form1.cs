@@ -22,6 +22,9 @@
  ** <2025/11/26> Add M5 Test Function with M5.Core Python Client in TempTest tabPage, v_1.0.1.0
  ** <2025/12/01> Add M5 Chart Test Function in VCSL tabPage, v_1.0.2.0
  ** <2025/12/03> Add Axis Control Function in Motor Control tabPage, v_1.0.3.0
+ ** <2025/12/08> Add Diagnostic Indicators for Power Meter and M5 Connection Results, v_1.0.4.0
+ ** <2025/12/09> Tranfer code to Automation PC => Edit and build project to make it run normally. v_1.0.5.0
+ ** <2025/12/10> Add tabAxisPos for position settings. X/Z axis run OK in GUI. v_1.0.5.1
  **
 ******************************************************************************/
 using M5.Core;  //M5 Python Client
@@ -40,6 +43,10 @@ using System.Windows.Forms;
 using Thorlabs.PM100D;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.ComponentModel;
+using System.Data;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
 
 
 #if X86
@@ -81,7 +88,7 @@ namespace QStations
         static string strLogNameDaily = ""; //strFileDailyFolder + "\\" + "H4_IQC_LBS_BURN" + "_" + strDailyLogDate + ".csv";
         string strFileDailyPath = "";   //userAppFolder + "\\" + strLogNameDaily;    //@"\Burn1to10.csv";
 
-        string strSwVer = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion.ToString();  //2023-07-18
+        string strSwVer = "1.0.5.1";//FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion.ToString();  //2023-07-18
         string strFwVer = "";
         string FolderToSaveInAuto;
 
@@ -120,6 +127,7 @@ namespace QStations
             _m5.ErrorOccurred += ex =>
             {
                 AppendLog($"[Error] {ex.Message}\r\n");
+                PicDiagM5ConnectResult.Image = QStations.Properties.Resources.icon_failed_30px;
             };
             _m5.ConnectionStateChanged += state =>
             {
@@ -189,7 +197,7 @@ namespace QStations
             grpEngRxSetting.Enabled = false;
             radAutoMode.Checked = true;
 
-            lblPMresourceName.Text = PMresourceName; lblSwVer.Text = "Software Version: " + strSwVer;
+            lblPMresourceName.Text = "PM100D: " + PMresourceName; lblSwVer.Text = "Software Version: " + strSwVer;
 
             //Engineer-Parameter Settings
             trkExpTimeM5Set.Maximum = 10000; trkExpTimeM5Set.Minimum = 0; trkExpTimeM5Set.Value = 1000;
@@ -215,7 +223,7 @@ namespace QStations
             tabControl1.TabPages.Remove(tabEngCalib); tabControl1.TabPages.Remove(tabEngVCSEL);
             tabControl1.TabPages.Remove(tabEngTx); tabControl1.TabPages.Remove(tabEngRx);
             //tabControl1.TabPages.Remove(tabM5Test); tabControl1.TabPages.Remove(tabM5chartTest);
-            //tabControl1.TabPages.Remove(tabMotor);
+            tabControl1.TabPages.Remove(tabAxisPos); //tabControl1.TabPages.Remove(tabMotor);
             btnConnect_Click(null, null); //Auto connect M5 on Form Load
             //btnStop_Click(null, null);    //Stop streaming on Form Load
         }
@@ -232,6 +240,7 @@ namespace QStations
                 double powerValue;
                 int err = pm100d.measPower(out powerValue);
                 labelPower.Text = (powerValue * 1000).ToString() + " mW";   // Display power in mW
+                PicDiagPdResult.Image = QStations.Properties.Resources.icon_PASS_30px;
             }
             catch (BadImageFormatException bie)
             {
@@ -245,6 +254,7 @@ namespace QStations
             {
                 labelPower.Text = ex.Message; //ex = {"Insufficient location information or the device or resource is not present in the system."} //sometimes happens here
                 AppendLog($"[PM Error] {ex.Message}\r\n");
+                PicDiagPdResult.Image = QStations.Properties.Resources.icon_failed_30px;
                 MessageBox.Show("Connect to Power Meter failed.\r\n" + ex.Message);
             }
             finally
@@ -323,7 +333,7 @@ namespace QStations
                     pm100d.Dispose();
             }
             toolStripStatusLabel1.Text = (powerValue * 1000).ToString("F6") + " mW";
-            
+
             return powerValue;
         }
 
@@ -1642,8 +1652,7 @@ namespace QStations
                 Thread.Sleep(2000); //delay 3 seconds to wait for server start
                 // 再去連 M5 client
                 await _m5.ConnectAsync("127.0.0.1", 5001);
-
-                AppendLog("Connected.\r\n"); toolStripStatusLabel1.Text += "...Connected.";
+                PicDiagM5ConnectResult.Image = QStations.Properties.Resources.icon_PASS_30px; AppendLog("Connected.\r\n"); toolStripStatusLabel1.Text += "...Connected.";
 
                 await M5StreamOff(); //btnStop_Click(null, null); //先停止streaming
             }
@@ -1651,7 +1660,9 @@ namespace QStations
             {
                 MessageBox.Show($"Connect failed: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 await M5StreamOff();
-                AppendLog($"Connect failed: {ex.Message}\r\n"); toolStripStatusLabel1.Text = "Connect failed. You should try to connect again.";
+                AppendLog($"Connect failed: {ex.Message}\r\n");
+                toolStripStatusLabel1.Text = "Connect failed. You should try to connect again.";
+                PicDiagM5ConnectResult.Image = QStations.Properties.Resources.icon_failed_30px;
             }
         }
 
@@ -1974,7 +1985,7 @@ namespace QStations
                 toolStripStatusLabel1.Text = "M5 LIV Test Completed.";
                 M5LaserOffAsync();
             }
-            
+
         }
 
         private async void btnRunStability_Click(object sender, EventArgs e)
@@ -2012,7 +2023,7 @@ namespace QStations
                 //Thread.Sleep(200);
             }
             //foreach (double item in dblM5StablePwrList) { Console.WriteLine(item); }
-            
+
             try
             {
                 await RunStabilityTestAsync(dblM5StablePwrList);  //await RunStabilityTestAsync();
@@ -2355,6 +2366,69 @@ namespace QStations
             if (bShowErr == true)
                 MessageBox.Show(strMsg);
         }
+        private void BtnChangeDist_Click(object sender, EventArgs e)
+        {
+            int nNewPos;
+            string strMsg;
+            nNewPos = Convert.ToInt32(TxtNewDist.Text);
+            g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_CSP_TargetPos_Change(g_uESCCardNo, g_uESCNodeID[0], g_uESCSlotID[0], nNewPos);
+
+            if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+            {
+                strMsg = "_ECAT_Slave_CSP_TargetPos_Change, ErrorCode = " + g_uRet.ToString();
+                AddErrMsg(strMsg, true);
+            }
+        }
+
+        private void BtnChangeVel_Click(object sender, EventArgs e)
+        {
+            int nNewSpd;
+            double dNewTDec;
+
+            nNewSpd = Convert.ToInt32(TxtNewVel.Text);
+            dNewTDec = Convert.ToDouble(TxtNewDec.Text);
+
+            g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_CSP_Velocity_Change(g_uESCCardNo, g_uESCNodeID[0], g_uESCSlotID[0], nNewSpd, dNewTDec);
+
+            if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+            {
+                AddErrMsg("_ECAT_Slave_CSP_Velocity_Change, rt = %d" + g_uRet.ToString(), true);
+            }
+        }
+
+        private void ChkSetGear_CheckedChanged(object sender, EventArgs e)
+        {
+            short nNumerator, nDenominator, nEnable;
+
+            nNumerator = Convert.ToInt16(TxtNumerator.Text);
+            nDenominator = Convert.ToInt16(TxtDenominator.Text);
+            nEnable = Convert.ToInt16(ChkRealTimeUpdate.Checked);
+
+            g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_CSP_Set_Gear(g_uESCCardNo, g_uESCNodeID[0], g_uESCSlotID[0], nNumerator, nDenominator, nEnable);
+
+            if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+            {
+                AddErrMsg("_ECAT_Slave_CSP_Set_Gear, ErrorCode = " + g_uRet.ToString(), true);
+            }
+        }
+
+        private void ChkSetLimit_CheckedChanged(object sender, EventArgs e)
+        {
+            ushort uEnable;
+            int nMLimit, nPLimit;
+
+            nMLimit = Convert.ToInt32(TxtMLimit.Text);
+            nPLimit = Convert.ToInt32(TxtPLimit.Text);
+            uEnable = Convert.ToUInt16(ChkSetLimit.Checked);
+
+            g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_CSP_Set_Softlimit(g_uESCCardNo, g_uESCNodeID[0], g_uESCSlotID[0], nMLimit, nPLimit, uEnable);
+
+            if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+            {
+                AddErrMsg("_ECAT_Slave_CSP_Set_Softlimit, ErrorCode = " + g_uRet.ToString(), true);
+            }
+        }
+
         private void BtnFindSlave_Click(object sender, EventArgs e)
         {
             short nSID = 0, Cnt = 0;
@@ -2397,6 +2471,23 @@ namespace QStations
                         {
                             nSID = 0;
                             strMsg = "NodeID:" + uNID + " - SlotID:" + nSID + "-A2E";
+                            CmbNode1.Items.Add(strMsg);
+                            CmbNodeID1.Items.Add(uNID.ToString());
+                            CmbSlotID1.Items.Add(nSID.ToString());
+
+                            CmbNode2.Items.Add(strMsg);
+                            CmbNodeID2.Items.Add(uNID.ToString());
+                            CmbSlotID2.Items.Add(nSID.ToString());
+
+                            CmbNode3.Items.Add(strMsg);
+                            CmbNodeID3.Items.Add(uNID.ToString());
+                            CmbSlotID3.Items.Add(nSID.ToString());
+                            Cnt++;
+                        }
+                        else if (uVendorID == 0x1DD && uProductCode == 0x00006080) //B3E
+                        {
+                            nSID = 0;
+                            strMsg = "NodeID:" + uNID + " - SlotID:" + nSID + "-B3E";
                             CmbNode1.Items.Add(strMsg);
                             CmbNodeID1.Items.Add(uNID.ToString());
                             CmbSlotID1.Items.Add(nSID.ToString());
@@ -2710,6 +2801,529 @@ namespace QStations
                     break;
             }
         }
+
+        private void btnStartDiagnostic_Click(object sender, EventArgs e)
+        {
+            btnStartDiagnostic.Enabled = false;
+            //btnDisconnect_Click(null, null);  Thread.Sleep(1000);
+            btnConnect_Click(null, null);
+            PM100DPwrReadTest_Click(null, null);
+
+            btnStartDiagnostic.Enabled = true;
+        }
+
+        private void CmbCardNo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string strCardNo;
+            strCardNo = CmbCardNo.Text;
+            if (strCardNo.Length > 0)
+                g_uESCCardNo = Convert.ToUInt16(strCardNo);
+        }
+
+        private void TimCheckStatus_Tick(object sender, EventArgs e)
+        {
+            ushort uInitialDone = 0, uRet = 0;
+            ushort uMCDone = 0, uStstus = 0, uBuffer = 0;
+            int nCmd = 0, nPos = 0, nAxisNum = 0, nSpeed = 0;
+            if (g_nESCExistCards > 0)
+            {
+                if (ChkRealTimeUpdate.Checked == true)
+                {
+                    if (g_nSelectMode > 0 && g_nSelectMode < 3)
+                        nAxisNum = 1;
+                    else if (g_nSelectMode > 2 && g_nSelectMode < 9)
+                        nAxisNum = 2;
+                    else if (g_nSelectMode > 8 && g_nSelectMode < 12)
+                        nAxisNum = 3;
+
+                    for (int nAxis = 0; nAxis < nAxisNum; nAxis++)
+                    {
+                        uRet = CEtherCAT_DLL.CS_ECAT_Slave_Motion_Get_Command(g_uESCCardNo, g_uESCNodeID[nAxis], g_uESCSlotID[nAxis], ref nCmd);
+                        if (uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                        {
+                            AddErrMsg("ECAT_Slave_Motion_Get_Command Fail, Error Code :" + uRet.ToString());
+                            ChkRealTimeUpdate.Checked = false;
+                            return;
+                        }
+                        // Pos
+                        uRet = CEtherCAT_DLL.CS_ECAT_Slave_Motion_Get_Position(g_uESCCardNo, g_uESCNodeID[nAxis], g_uESCSlotID[nAxis], ref nPos);
+                        if (uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                        {
+                            AddErrMsg("ECAT_Slave_Motion_Get_Position Fail, Error Code :" + uRet.ToString());
+                            ChkRealTimeUpdate.Checked = false;
+                            return;
+                        }
+                        // Status
+                        uRet = CEtherCAT_DLL.CS_ECAT_Slave_Motion_Get_StatusWord(g_uESCCardNo, g_uESCNodeID[nAxis], g_uESCSlotID[nAxis], ref uStstus);
+                        if (uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                        {
+                            AddErrMsg("ECAT_Slave_Motion_Get_StatusWord Fail, Error Code :" + uRet.ToString());
+                            ChkRealTimeUpdate.Checked = false;
+                            return;
+                        }
+                        // Motion Down
+                        uRet = CEtherCAT_DLL.CS_ECAT_Slave_Motion_Get_Mdone(g_uESCCardNo, g_uESCNodeID[nAxis], g_uESCSlotID[nAxis], ref uMCDone);
+                        if (uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                        {
+                            AddErrMsg("ECAT_Slave_Motion_Get_Mdone Fail, Error Code :" + uRet.ToString());
+                            ChkRealTimeUpdate.Checked = false;
+                            return;
+                        }
+                        // Speed
+                        uRet = CEtherCAT_DLL.CS_ECAT_Slave_Motion_Get_Current_Speed(g_uESCCardNo, g_uESCNodeID[nAxis], g_uESCSlotID[nAxis], ref nSpeed);
+                        if (uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                        {
+                            AddErrMsg("ECAT_Slave_Motion_Get_Mdone Fail, Error Code :" + uRet.ToString());
+                            ChkRealTimeUpdate.Checked = false;
+                            return;
+                        }
+                        // Buffer
+                        uRet = CEtherCAT_DLL.CS_ECAT_Slave_Motion_Get_Buffer_Length(g_uESCCardNo, g_uESCNodeID[nAxis], g_uESCSlotID[nAxis], ref uBuffer);
+                        if (uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                        {
+                            AddErrMsg("ECAT_Slave_Motion_Get_Mdone Fail, Error Code :" + uRet.ToString());
+                            ChkRealTimeUpdate.Checked = false;
+                            return;
+                        }
+                        switch (nAxis + 1)
+                        {
+                            case 1:
+                                TxtCmdPos1.Text = nCmd.ToString();
+                                TxtFbkPos1.Text = nPos.ToString();
+                                TxtIOStatus1.Text = System.String.Format("0x{0,4:X}", uStstus);
+                                TxtSpeed1.Text = nSpeed.ToString();
+                                TxtMotionDown1.Text = uMCDone.ToString();
+                                TxtBuffer1.Text = uBuffer.ToString();
+                                break;
+                            case 2:
+                                TxtCmdPos2.Text = nCmd.ToString();
+                                TxtFbkPos2.Text = nPos.ToString();
+                                TxtIOStatus2.Text = System.String.Format("0x{0,4:X}", uStstus);
+                                TxtSpeed2.Text = nSpeed.ToString();
+                                TxtMotionDown2.Text = uMCDone.ToString();
+                                TxtBuffer2.Text = uBuffer.ToString();
+                                break;
+                            case 3:
+                                TxtCmdPos3.Text = nCmd.ToString();
+                                TxtFbkPos3.Text = nPos.ToString();
+                                TxtIOStatus3.Text = System.String.Format("0x{0,4:X}", uStstus);
+                                TxtSpeed3.Text = nSpeed.ToString();
+                                TxtMotionDown3.Text = uMCDone.ToString();
+                                TxtBuffer3.Text = uBuffer.ToString();
+                                break;
+                        }
+                    }//for (int nAxis = 0; nAxis < nAxisNum; nAxis++ )
+                }//if (ChkRealTimeUpdate.Checked == true)
+                uRet = CEtherCAT_DLL.CS_ECAT_Master_Check_Initial_Done(g_uESCCardNo, ref uInitialDone);
+                if (uRet == 0)
+                {
+                    if (uInitialDone == 0)
+                    {
+                        TxtInitialStatus.Text = "Initial Done";
+                        if (BtnFindSlave.Enabled == false)
+                        {
+                            BtnFindSlave.Text = "1-2. Find Slave";
+                            BtnFindSlave.Enabled = true;
+                        }
+                    }
+                    else if (uInitialDone == 1)
+                    {
+                        BtnFindSlave.Text = "Wait Initial";
+                        TxtInitialStatus.Text = "Pre Initial";
+                    }
+                    else if (uInitialDone == 99)
+                    {
+                        BtnFindSlave.Text = "Initial Fail";
+                        TxtInitialStatus.Text = "Initial Error";
+                    }
+                }
+            }//if(g_nESCExistCards > 0)
+        }
+
+        private double GetDeceleration()
+        { // 取得減速度
+            double dDec = 0;
+            // 減速度固定在最後一個欄位
+            for (int nParam = 1; nParam < 12; nParam++)
+            {
+                if (g_pTxtParam[nParam].Visible == true)
+                {
+                    dDec = Convert.ToDouble(g_pTxtParam[nParam].Text);
+                }
+            }
+            return dDec;
+        }
+
+        private void BtnStop_Click(object sender, EventArgs e)
+        {
+            string strMsg;
+            double dTdec;
+
+            dTdec = GetDeceleration();
+            g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_Motion_Sd_Stop(g_uESCCardNo, g_uESCNodeID[0], g_uESCSlotID[0], dTdec);
+            // 只需停止主軸
+            if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+            {
+                strMsg = "_ECAT_Slave_Motion_Sd_Stop, ErrorCode = " + g_uRet.ToString();
+                AddErrMsg(strMsg);
+            }
+        }
+        private void BtnMoveLeft_Click(object sender, EventArgs e)
+        {
+            AxisMove(0);
+        }
+
+        private void BtnMoveRight_Click(object sender, EventArgs e)
+        {
+            AxisMove(1);
+        }
+
+        private void AxisMove(int nDir)
+        {
+            ushort uDir = 0, uCycleNum = 0, uSCurve = 0, uAbsMove = 0;
+            int[] nCenPot = { 0, 0 };
+            int[] nEndPot = { 0, 0 };
+            int[] nDist = { 0, 0, 0 };
+            int[] nDist2 = { 0, 0, 0 };
+            int nDepth = 0, nPitch = 0, nStrVel = 0, nConstVel = 0, nEndVel = 0;
+            int nSpiralInterval = 0;
+            double dTAcc = 0, dTDec = 0, dAngle = 0;
+            string strMsg = "";
+
+            if (ChkSCurve.Checked == true)
+                uSCurve = 1;
+
+            if (ChkAbsMove.Checked == true)
+                uAbsMove = 1;
+
+            g_uRet = (ushort)CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR;
+
+            if (nDir == 0)
+                uDir = 1;
+
+            if (g_nSelectMode > 2)
+            {
+                if (CmbNode1.SelectedIndex == CmbNode2.SelectedIndex)
+                {
+                    strMsg = "Node 2 select error";
+                    AddErrMsg(strMsg, true);
+                    return;
+                }
+            }
+            if (g_nSelectMode > 8)
+            {
+                if ((CmbNode1.SelectedIndex == CmbNode3.SelectedIndex)
+                || (CmbNode2.SelectedIndex == CmbNode3.SelectedIndex))
+                {
+                    strMsg = "Node 3 select error";
+                    AddErrMsg(strMsg, true);
+                    return;
+                }
+            }
+            switch (g_nSelectMode)
+            {
+                case 1:
+                    nDist[0] = (nDir == 1) ? Convert.ToInt32(TxtParam01.Text) : 0 - Convert.ToInt32(TxtParam01.Text);
+                    nStrVel = Convert.ToInt32(TxtParam02.Text);
+                    nConstVel = Convert.ToInt32(TxtParam03.Text);
+                    nEndVel = Convert.ToInt32(TxtParam04.Text);
+                    dTAcc = Convert.ToDouble(TxtParam05.Text);
+                    dTDec = Convert.ToDouble(TxtParam06.Text);
+
+                    g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_CSP_Start_Move(g_uESCCardNo, g_uESCNodeID[0], g_uESCSlotID[0], nDist[0], nStrVel, nConstVel, nEndVel, dTAcc, dTDec, uSCurve, uAbsMove);
+                    if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                        strMsg = "_ECAT_Slave_CSP_Start_Move, ErrorCode = " + g_uRet.ToString();
+                    break;
+                case 2:
+                    nStrVel = Convert.ToInt32(TxtParam01.Text);
+                    nConstVel = Convert.ToInt32(TxtParam02.Text);
+                    dTAcc = Convert.ToDouble(TxtParam03.Text);
+                    g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_CSP_Start_V_Move(g_uESCCardNo, g_uESCNodeID[0], g_uESCSlotID[0], uDir, nStrVel, nConstVel, dTAcc, uSCurve);
+                    if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                        strMsg = "_ECAT_Slave_CSP_Start_V_Move, ErrorCode = " + g_uRet.ToString();
+                    break;
+                case 3:
+                    nDist[0] = (nDir == 0) ? (0 - Convert.ToInt32(TxtParam01.Text)) : (Convert.ToInt32(TxtParam01.Text));
+                    nDist[1] = (nDir == 0) ? (0 - Convert.ToInt32(TxtParam02.Text)) : (Convert.ToInt32(TxtParam02.Text));
+                    nStrVel = Convert.ToInt32(TxtParam03.Text);
+                    nConstVel = Convert.ToInt32(TxtParam04.Text);
+                    nEndVel = Convert.ToInt32(TxtParam05.Text);
+                    dTAcc = Convert.ToDouble(TxtParam06.Text);
+                    dTDec = Convert.ToDouble(TxtParam07.Text);
+
+                    g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_CSP_Start_Multiaxes_Move(g_uESCCardNo, 2, ref g_uESCNodeID[0], ref g_uESCSlotID[0], ref nDist[0], nStrVel, nConstVel, nEndVel, dTAcc, dTDec, uSCurve, uAbsMove);
+                    if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                        strMsg = "_ECAT_Slave_CSP_Start_Multiaxes_Move, ErrorCode = " + g_uRet.ToString();
+                    break;
+                case 4:
+                    nCenPot[0] = Convert.ToInt32(TxtParam01.Text);
+                    nCenPot[1] = Convert.ToInt32(TxtParam02.Text);
+                    dAngle = (nDir == 0) ? (0 - Convert.ToDouble(TxtParam03.Text)) : Convert.ToDouble(TxtParam03.Text);
+                    nStrVel = Convert.ToInt32(TxtParam04.Text);
+                    nConstVel = Convert.ToInt32(TxtParam05.Text);
+                    nEndVel = Convert.ToInt32(TxtParam06.Text);
+                    dTAcc = Convert.ToDouble(TxtParam07.Text);
+                    dTDec = Convert.ToDouble(TxtParam08.Text);
+                    g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_CSP_Start_Arc_Move(g_uESCCardNo, ref g_uESCNodeID[0], ref g_uESCSlotID[0], ref nCenPot[0], dAngle, nStrVel, nConstVel, nEndVel, dTAcc, dTDec, uSCurve, uAbsMove);
+                    if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                        strMsg = "_ECAT_Slave_CSP_Start_Arc_Move, ErrorCode = " + g_uRet.ToString();
+                    break;
+                case 5:
+                    nEndPot[0] = Convert.ToInt32(TxtParam01.Text);
+                    nEndPot[1] = Convert.ToInt32(TxtParam02.Text);
+                    dAngle = (nDir == 0) ? (0 - Convert.ToDouble(TxtParam03.Text)) : Convert.ToDouble(TxtParam03.Text);
+                    nStrVel = Convert.ToInt32(TxtParam04.Text);
+                    nConstVel = Convert.ToInt32(TxtParam05.Text);
+                    nEndVel = Convert.ToInt32(TxtParam06.Text);
+                    dTAcc = Convert.ToDouble(TxtParam07.Text);
+                    dTDec = Convert.ToDouble(TxtParam08.Text);
+                    g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_CSP_Start_Arc2_Move(g_uESCCardNo, ref g_uESCNodeID[0], ref g_uESCSlotID[0], ref nEndPot[0], dAngle, nStrVel, nConstVel, nEndVel, dTAcc, dTDec, uSCurve, uAbsMove);
+                    if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                        strMsg = "_ECAT_Slave_CSP_Start_Arc2_Move, ErrorCode = " + g_uRet.ToString();
+                    break;
+                case 6:
+                    nCenPot[0] = Convert.ToInt32(TxtParam01.Text);
+                    nCenPot[1] = Convert.ToInt32(TxtParam02.Text);
+                    nEndPot[0] = Convert.ToInt32(TxtParam03.Text);
+                    nEndPot[1] = Convert.ToInt32(TxtParam04.Text);
+                    nStrVel = Convert.ToInt32(TxtParam05.Text);
+                    nConstVel = Convert.ToInt32(TxtParam06.Text);
+                    nEndVel = Convert.ToInt32(TxtParam07.Text);
+                    dTAcc = Convert.ToDouble(TxtParam08.Text);
+                    dTDec = Convert.ToDouble(TxtParam09.Text);
+                    g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_CSP_Start_Arc3_Move(g_uESCCardNo, ref g_uESCNodeID[0], ref g_uESCSlotID[0], ref nCenPot[0], ref nEndPot[0], uDir, nStrVel, nConstVel, nEndVel, dTAcc, dTDec, uSCurve, uAbsMove);
+                    if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                        strMsg = "_ECAT_Slave_CSP_Start_Arc3_Move, ErrorCode = " + g_uRet.ToString();
+                    break;
+                case 7:
+                    nCenPot[0] = Convert.ToInt32(TxtParam01.Text);
+                    nCenPot[1] = Convert.ToInt32(TxtParam02.Text);
+                    nSpiralInterval = Convert.ToInt32(TxtParam03.Text);
+                    dAngle = (nDir == 0) ? (0 - Convert.ToDouble(TxtParam04.Text)) : Convert.ToDouble(TxtParam04.Text);
+                    nStrVel = Convert.ToInt32(TxtParam05.Text);
+                    nConstVel = Convert.ToInt32(TxtParam06.Text);
+                    nEndVel = Convert.ToInt32(TxtParam07.Text);
+                    dTAcc = Convert.ToDouble(TxtParam08.Text);
+                    dTDec = Convert.ToDouble(TxtParam09.Text);
+                    g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_CSP_Start_Spiral_Move(g_uESCCardNo, ref g_uESCNodeID[0], ref g_uESCSlotID[0], ref nCenPot[0], nSpiralInterval, dAngle, nStrVel, nConstVel, nEndVel, dTAcc, dTDec, uSCurve, uAbsMove);
+                    if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                        strMsg = "_ECAT_Slave_CSP_Start_Spiral_Move, ErrorCode = " + g_uRet.ToString();
+                    break;
+                case 8:
+                    nCenPot[0] = Convert.ToInt32(TxtParam01.Text);
+                    nCenPot[1] = Convert.ToInt32(TxtParam02.Text);
+                    nEndPot[0] = Convert.ToInt32(TxtParam03.Text);
+                    nEndPot[1] = Convert.ToInt32(TxtParam04.Text);
+                    uCycleNum = Convert.ToUInt16(TxtParam05.Text);
+                    nStrVel = Convert.ToInt32(TxtParam06.Text);
+                    nConstVel = Convert.ToInt32(TxtParam07.Text);
+                    nEndVel = Convert.ToInt32(TxtParam08.Text);
+                    dTAcc = Convert.ToDouble(TxtParam09.Text);
+                    dTDec = Convert.ToDouble(TxtParam10.Text);
+                    g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_CSP_Start_Spiral2_Move(g_uESCCardNo, ref g_uESCNodeID[0], ref g_uESCSlotID[0], ref nCenPot[0], ref nEndPot[0], uDir, uCycleNum, nStrVel, nConstVel, nEndVel, dTAcc, dTDec, uSCurve, uAbsMove);
+                    if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                        strMsg = "_ECAT_Slave_CSP_Start_Spiral2_Move, ErrorCode = " + g_uRet.ToString();
+                    break;
+                case 9:
+                    nCenPot[0] = (nDir == 0) ? (0 - Convert.ToInt32(TxtParam01.Text)) : Convert.ToInt32(TxtParam01.Text);
+                    nCenPot[1] = (nDir == 0) ? (0 - Convert.ToInt32(TxtParam02.Text)) : Convert.ToInt32(TxtParam02.Text);
+                    nDepth = Convert.ToInt32(TxtParam03.Text);
+                    nPitch = Convert.ToInt32(TxtParam04.Text);
+                    nStrVel = Convert.ToInt32(TxtParam05.Text);
+                    nConstVel = Convert.ToInt32(TxtParam06.Text);
+                    nEndVel = Convert.ToInt32(TxtParam07.Text);
+                    dTAcc = Convert.ToDouble(TxtParam08.Text);
+                    dTDec = Convert.ToDouble(TxtParam09.Text);
+                    g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_CSP_Start_Heli_Move(g_uESCCardNo, ref g_uESCNodeID[0], ref g_uESCSlotID[0], ref nCenPot[0], nDepth, nPitch, uDir, nStrVel, nConstVel, nEndVel, dTAcc, dTDec, uSCurve, uAbsMove);
+                    if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                        strMsg = "_ECAT_Slave_CSP_Start_Heli_Move, ErrorCode = " + g_uRet.ToString();
+                    break;
+                case 10:
+                    nDist[0] = (nDir == 0) ? (0 - Convert.ToInt32(TxtParam01.Text)) : (Convert.ToInt32(TxtParam01.Text));
+                    nDist[1] = (nDir == 0) ? (0 - Convert.ToInt32(TxtParam02.Text)) : (Convert.ToInt32(TxtParam02.Text));
+                    nDist[2] = (nDir == 0) ? (0 - Convert.ToInt32(TxtParam03.Text)) : (Convert.ToInt32(TxtParam03.Text));
+                    nStrVel = Convert.ToInt32(TxtParam04.Text);
+                    nConstVel = Convert.ToInt32(TxtParam05.Text);
+                    nEndVel = Convert.ToInt32(TxtParam06.Text);
+                    dTAcc = Convert.ToDouble(TxtParam07.Text);
+                    dTDec = Convert.ToDouble(TxtParam08.Text);
+
+                    g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_CSP_Start_Multiaxes_Move(g_uESCCardNo, 3, ref g_uESCNodeID[0], ref g_uESCSlotID[0], ref nDist[0], nStrVel, nConstVel, nEndVel, dTAcc, dTDec, uSCurve, uAbsMove);
+                    if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                        strMsg = "_ECAT_Slave_CSP_Start_Multiaxes_Move, ErrorCode = " + g_uRet.ToString();
+                    break;
+                case 11:
+                    nDist[0] = (nDir == 0) ? (0 - Convert.ToInt32(TxtParam01.Text)) : (Convert.ToInt32(TxtParam01.Text));
+                    nDist[1] = (nDir == 0) ? (0 - Convert.ToInt32(TxtParam02.Text)) : (Convert.ToInt32(TxtParam02.Text));
+                    nDist[2] = (nDir == 0) ? (0 - Convert.ToInt32(TxtParam03.Text)) : (Convert.ToInt32(TxtParam03.Text));
+                    nDist2[0] = (nDir == 0) ? (0 - Convert.ToInt32(TxtParam04.Text)) : (Convert.ToInt32(TxtParam04.Text));
+                    nDist2[1] = (nDir == 0) ? (0 - Convert.ToInt32(TxtParam05.Text)) : (Convert.ToInt32(TxtParam05.Text));
+                    nDist2[2] = (nDir == 0) ? (0 - Convert.ToInt32(TxtParam06.Text)) : (Convert.ToInt32(TxtParam06.Text));
+                    nStrVel = Convert.ToInt32(TxtParam07.Text);
+                    nConstVel = Convert.ToInt32(TxtParam08.Text);
+                    nEndVel = Convert.ToInt32(TxtParam09.Text);
+                    dTAcc = Convert.ToDouble(TxtParam10.Text);
+                    dTDec = Convert.ToDouble(TxtParam11.Text);
+
+                    g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_CSP_Start_Sphere_Move(g_uESCCardNo, ref g_uESCNodeID[0], ref g_uESCSlotID[0], ref nDist[0], ref nDist2[0], nStrVel, nConstVel, nEndVel, dTAcc, dTDec, uSCurve, uAbsMove);
+                    if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                        strMsg = "_ECAT_Slave_CSP_Start_Sphere_Move, ErrorCode = " + g_uRet.ToString();
+                    break;
+            }
+            if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                AddErrMsg(strMsg);
+        }
+        private void BtnResetAlarm_Click(object sender, EventArgs e)
+        {
+            string strMsg;
+
+            g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_Motion_Ralm(g_uESCCardNo, g_uESCNodeID[0], g_uESCSlotID[0]);
+
+            if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+            {
+                strMsg = "_ECAT_Slave_Motion_Ralm, ErrorCode = " + g_uRet.ToString();
+                AddErrMsg(strMsg);
+            }
+
+            if (g_nSelectMode > 2)
+            {
+                g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_Motion_Ralm(g_uESCCardNo, g_uESCNodeID[1], g_uESCSlotID[1]);
+
+                if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                {
+                    strMsg = "_ECAT_Slave_Motion_Ralm, ErrorCode = " + g_uRet.ToString();
+                    AddErrMsg(strMsg);
+                }
+            }
+
+            if (g_nSelectMode > 8)
+            {
+                g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_Motion_Ralm(g_uESCCardNo, g_uESCNodeID[2], g_uESCSlotID[2]);
+
+                if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                {
+                    strMsg = "_ECAT_Slave_Motion_Ralm, ErrorCode = " + g_uRet.ToString();
+                    AddErrMsg(strMsg);
+                }
+            }
+        }
+
+        private void BtnResetStatus_Click(object sender, EventArgs e)
+        {
+            string strMsg;
+
+            g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_Motion_Set_Position(g_uESCCardNo, g_uESCNodeID[0], g_uESCSlotID[0], 0);
+            if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+            {
+                strMsg = "CS_ECAT_Slave_Motion_Set_Position, ErrorCode = " + g_uRet;
+                AddErrMsg(strMsg);
+            }
+            g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_Motion_Set_Command(g_uESCCardNo, g_uESCNodeID[0], g_uESCSlotID[0], 0);
+            if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+            {
+                strMsg = "CS_ECAT_Slave_Motion_Set_Command, ErrorCode = " + g_uRet;
+                AddErrMsg(strMsg);
+            }
+
+            if (g_nSelectMode > 2)
+            {
+                g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_Motion_Set_Position(g_uESCCardNo, g_uESCNodeID[1], g_uESCSlotID[1], 0);
+                if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                {
+                    strMsg = "CS_ECAT_Slave_Motion_Set_Position, ErrorCode = " + g_uRet;
+                    AddErrMsg(strMsg);
+                }
+                g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_Motion_Set_Command(g_uESCCardNo, g_uESCNodeID[1], g_uESCSlotID[1], 0);
+                if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                {
+                    strMsg = "CS_ECAT_Slave_Motion_Set_Command, ErrorCode = " + g_uRet;
+                    AddErrMsg(strMsg);
+                }
+            }
+
+            if (g_nSelectMode > 8)
+            {
+                g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_Motion_Set_Position(g_uESCCardNo, g_uESCNodeID[2], g_uESCSlotID[2], 0);
+                if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                {
+                    strMsg = "CS_ECAT_Slave_Motion_Set_Position, ErrorCode = " + g_uRet;
+                    AddErrMsg(strMsg);
+                }
+                g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_Motion_Set_Command(g_uESCCardNo, g_uESCNodeID[2], g_uESCSlotID[2], 0);
+                if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+                {
+                    strMsg = "CS_ECAT_Slave_Motion_Set_Command, ErrorCode = " + g_uRet;
+                    AddErrMsg(strMsg);
+                }
+            }
+        }
+
+        private void TrcFeedrate_Scroll(object sender, EventArgs e)
+        {
+            int nNewSpd;
+
+            nNewSpd = TrcFeedrate.Value;
+            g_uRet = CEtherCAT_DLL.CS_ECAT_Slave_CSP_Feedrate_Overwrite(g_uESCCardNo, g_uESCNodeID[0], g_uESCSlotID[0], 2, nNewSpd, 0.1);
+
+            if (g_uRet != CEtherCAT_DLL_Err.ERR_ECAT_NO_ERROR)
+            {
+                AddErrMsg("_ECAT_Slave_CSP_Feedrate_Overwrite, ErrorCode = " + g_uRet.ToString(), true);
+            }
+            else
+            {
+                TxtFeedrate.Text = nNewSpd.ToString();
+            }
+        }
+
+        private void CmbNode1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int nSelectNode = 0;
+            nSelectNode = CmbNode1.SelectedIndex;
+            CmbNodeID1.SelectedIndex = nSelectNode;
+            CmbSlotID1.SelectedIndex = nSelectNode;
+            string strNodeID, strSlotID;
+            strNodeID = CmbNodeID1.Text;
+            if (strNodeID.Length > 0)
+                g_uESCNodeID[0] = Convert.ToUInt16(strNodeID);
+
+            strSlotID = CmbSlotID1.Text;
+            if (strSlotID.Length > 0)
+                g_uESCSlotID[0] = Convert.ToUInt16(strSlotID);
+        }
+        private void CmbNode2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int nSelectNode = 0;
+            nSelectNode = CmbNode2.SelectedIndex;
+            CmbNodeID2.SelectedIndex = nSelectNode;
+            CmbSlotID2.SelectedIndex = nSelectNode;
+            string strNodeID, strSlotID;
+            strNodeID = CmbNodeID2.Text;
+            if (strNodeID.Length > 0)
+                g_uESCNodeID[1] = Convert.ToUInt16(strNodeID);
+
+            strSlotID = CmbSlotID2.Text;
+            if (strSlotID.Length > 0)
+                g_uESCSlotID[1] = Convert.ToUInt16(strSlotID);
+        }
+
+        private void CmbNode3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int nSelectNode = 0;
+            nSelectNode = CmbNode3.SelectedIndex;
+            CmbNodeID3.SelectedIndex = nSelectNode;
+            CmbSlotID3.SelectedIndex = nSelectNode;
+            string strNodeID, strSlotID;
+            strNodeID = CmbNodeID3.Text;
+            if (strNodeID.Length > 0)
+                g_uESCNodeID[2] = Convert.ToUInt16(strNodeID);
+
+            strSlotID = CmbSlotID3.Text;
+            if (strSlotID.Length > 0)
+                g_uESCSlotID[2] = Convert.ToUInt16(strSlotID);
+        }
+
+
+
 
     }
 }
